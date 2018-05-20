@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.gshop.dao.SPUDao">
+	<resultMap id="BaseResultMap" type="com.gshop.bean.ShopSPU">
+		<result column="pid" property="spuId" />
+		<result column="title" property="titile" />
+		<result column="sub_title" property="subTitile" />
+		<result column="spu_desc" property="desc" />
+		<result column="imge_urls" property="imageUrls" />
+		<result column="spu_type" property="type" />
+	</resultMap>
+
+	<parameterMap id="ShopSPU" type="com.gshop.bean.ShopSPU"/>
+
+	<sql id="SPU_Item_List">
+		id, title, sub_title, spu_desc,image_urls
+	</sql>
+
+	<select id="fetchItemList" resultMap="BaseResultMap" parameterType="java.lang.Integer">
+		select
+		<include refid="SPU_Item_List" />
+		from spu_list
+		where type = #{type}
+	</select>
+
+</mapper>
