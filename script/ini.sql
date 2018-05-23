@@ -1,7 +1,7 @@
-﻿ALTER USER 'root' @'localhost' IDENTIFIED WITH mysql_native_password BY 'root';
+﻿ALTER USER 'root' @'localhost' IDENTIFIED WITH mysql_native_password BY 'rootroot';
 CREATE SCHEMA
 IF
-	NOT EXISTS `gshop` DEFAULT CHARACTER 
+	NOT EXISTS `gshop` DEFAULT CHARACTER
 	SET utf8;
 USE gshop;
 CREATE TABLE
@@ -14,7 +14,7 @@ IF
 	`imageUrls` text,
 	`spu_type` INT ( 11 ) NOT NULL,
 	PRIMARY KEY ( `pid` ),
-	INDEX type_index ( `spu_type` ) 
+	INDEX type_index ( `spu_type` )
 	);
 INSERT INTO shopSPU ( pid, title, sub_title, spu_desc, imageUrls, spu_type )
 VALUES
@@ -34,4 +34,4 @@ VALUES
 
 INSERT INTO shopSPU ( title, sub_title, spu_desc, imageUrls, spu_type )
 VALUES
-	( '唤自然·仲夏椰香四件套', '100%全棉，椰林自然设计', '', 'http://yanxuan.nosdn.127.net/453fcb08b3ffd0f0e4fcb7e076ad2160.jpg', 1 )
+	( '300根水洗棉缎纹床笠', '缎纹水洗棉，光滑柔软', '', 'https://yanxuan.nosdn.127.net/dd192cb3cc17292ebfed62c5b6a975e7.png', 1 )
