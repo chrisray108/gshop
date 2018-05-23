@@ -3,7 +3,6 @@ package com.gshop;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
-import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 
@@ -11,15 +10,10 @@ import org.springframework.web.bind.annotation.RestController;
 
 @SpringBootApplication(exclude= {DataSourceAutoConfiguration.class})
 
-public class ServerApplication {
-
-    public static void main(String[] args) {
-        SpringApplication.run(ServerApplication.class, args);
-    }
-
-    @RequestMapping(value = "/main",produces = "text/plain;charset=UTF-8")
-    String index()
+public class ServerApplication
+{
+    public static void main(String[] args)
     {
-        return "Hello Spring Boot!";
+        SpringApplication.run(ServerApplication.class, args);
     }
 }
