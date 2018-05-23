@@ -1,7 +1,5 @@
 package com.gshop.bean;
 
-import org.springframework.beans.factory.annotation.Autowired;
-
 import java.io.Serializable;
 import java.util.List;
 
@@ -11,37 +9,90 @@ public class ShopSPU implements Serializable {
     /**
      * id
      */
-    @Autowired
     private String spuId;
 
     /**
      * 标题
      */
-    @Autowired
     private String title;
 
     /**
      * 副标题
      */
-    @Autowired
     private String subTitle;
 
     /**
      * 描述
      */
-    @Autowired
     private String desc;
 
     /**
      * 图片
      */
-    @Autowired
     private List<String> imageUrls;
 
     /**
      * 类型
      */
-    @Autowired
     private Integer type;
 
+    public String getSpuId() {
+        return spuId;
+    }
+
+    public void setSpuId(String spuId) {
+        this.spuId = spuId;
+    }
+
+    public String getTitle() {
+        return title;
+    }
+
+    public void setTitle(String title) {
+        this.title = title;
+    }
+
+    public String getSubTitle() {
+        return subTitle;
+    }
+
+    public void setSubTitle(String subTitle) {
+        this.subTitle = subTitle;
+    }
+
+    public String getDesc() {
+        return desc;
+    }
+
+    public void setDesc(String desc) {
+        this.desc = desc;
+    }
+
+    public List<String> getImageUrls() {
+        return imageUrls;
+    }
+
+    public void setImageUrls(List<String> imageUrls) {
+        this.imageUrls = imageUrls;
+    }
+
+    public Integer getType() {
+        return type;
+    }
+
+    public void setType(Integer type) {
+        this.type = type;
+    }
+
+    @Override
+    public String toString() {
+        return "ShopSPU{" +
+                "spuId='" + spuId + '\'' +
+                ", title='" + title + '\'' +
+                ", subTitle='" + subTitle + '\'' +
+                ", desc='" + desc + '\'' +
+                ", imageUrls=" + imageUrls +
+                ", type=" + type +
+                '}';
+    }
 }
