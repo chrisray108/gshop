@@ -9,6 +9,7 @@ IF
 	NOT EXISTS `shopSPU` (
 	`pid` INT ( 11 ) NOT NULL AUTO_INCREMENT,
 	`title` text,
+	`prise` INT (11),
 	`sub_title` text,
 	`spu_desc` text,
 	`imageUrls` text,
