@@ -29,7 +29,7 @@ public class ShopSPU implements Serializable {
     /**
      * 图片
      */
-    private List<String> imageUrls;
+    private String imageUrls;
 
     /**
      * 类型
@@ -68,11 +68,11 @@ public class ShopSPU implements Serializable {
         this.desc = desc;
     }
 
-    public List<String> getImageUrls() {
+    public String getImageUrls() {
         return imageUrls;
     }
 
-    public void setImageUrls(List<String> imageUrls) {
+    public void setImageUrls(String imageUrls) {
         this.imageUrls = imageUrls;
     }
 

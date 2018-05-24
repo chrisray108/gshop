@@ -3,24 +3,24 @@
 <mapper namespace="com.gshop.dao.SPUDao">
 	<resultMap id="BaseResultMap" type="com.gshop.bean.ShopSPU">
 		<result column="pid" property="spuId" />
-		<result column="title" property="titile" />
-		<result column="sub_title" property="subTitile" />
+		<result column="title" property="title" />
+		<result column="sub_title" property="subTitle" />
 		<result column="spu_desc" property="desc" />
-		<result column="imge_urls" property="imageUrls" />
+		<result column="image_urls" property="imageUrls" />
 		<result column="spu_type" property="type" />
 	</resultMap>
 
 	<parameterMap id="ShopSPU" type="com.gshop.bean.ShopSPU"/>
 
 	<sql id="SPU_Item_List">
-		id, title, sub_title, spu_desc,image_urls
+		pid, title, sub_title, spu_desc,image_urls
 	</sql>
 
 	<select id="fetchItemList" resultMap="BaseResultMap" parameterType="java.lang.Integer">
 		select
 		<include refid="SPU_Item_List" />
-		from spu_list
-		where type = #{type}
+		from spu
+		where spu_type = #{type}
 	</select>
 
 </mapper>
