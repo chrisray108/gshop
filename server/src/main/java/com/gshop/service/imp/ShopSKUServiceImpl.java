@@ -18,4 +18,13 @@ public class ShopSKUServiceImpl implements ShopSKUService {
     public List<ShopSPU> fetchItemList(Integer type) {
         return spudao.fetchItemList(type);
     }
+
+    @Override
+    public Long addItem(Integer type) {
+        ShopSPU spu = new ShopSPU();
+        spu.setTitle("测试数据");
+        spu.setType(2);
+        spu.setPrise(100);
+        return spudao.addItem(spu);
+    }
 }

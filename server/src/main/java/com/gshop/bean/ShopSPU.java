@@ -31,10 +31,18 @@ public class ShopSPU implements Serializable {
      */
     private String imageUrls;
 
+
     /**
      * 类型
      */
+
     private Integer type;
+
+    /**
+     * 价格
+     */
+    private Integer prise;
+
 
     public String getSpuId() {
         return spuId;
@@ -82,6 +90,14 @@ public class ShopSPU implements Serializable {
 
     public void setType(Integer type) {
         this.type = type;
+    }
+
+    public Integer getPrise() {
+        return prise;
+    }
+
+    public void setPrise(Integer prise) {
+        this.prise = prise;
     }
 
     @Override

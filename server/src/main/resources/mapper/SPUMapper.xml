@@ -8,19 +8,26 @@
 		<result column="spu_desc" property="desc" />
 		<result column="image_urls" property="imageUrls" />
 		<result column="spu_type" property="type" />
+        <result column="prise"    property="prise" />
 	</resultMap>
 
 	<parameterMap id="ShopSPU" type="com.gshop.bean.ShopSPU"/>
 
 	<sql id="SPU_Item_List">
-		pid, title, sub_title, spu_desc,image_urls
+		pid, title, sub_title, spu_desc, image_urls, prise, spu_type
 	</sql>
 
 	<select id="fetchItemList" resultMap="BaseResultMap" parameterType="java.lang.Integer">
 		select
 		<include refid="SPU_Item_List" />
 		from spu
-		where spu_type = #{type}
 	</select>
+
+    <insert id="addItem" parameterMap="ShopSPU" useGeneratedKeys="true" keyProperty="spuId">
+		insert into
+		spu(pid,title,sub_title,spu_desc,prise,image_urls,spu_type)
+		values
+		(#{spuId},#{title},#{subTitle},#{desc},#{prise},#{imageUrls},#{type})
+	</insert>
 
 </mapper>

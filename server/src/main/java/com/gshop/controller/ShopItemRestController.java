@@ -22,9 +22,14 @@ public class ShopItemRestController {
         return skuService.fetchItemList(1);
     }
 
+    @RequestMapping(value = "/addItem",method = RequestMethod.GET)
+    Long addItem() { return skuService.addItem(1); }
+
     @RequestMapping(value = "/test",method = RequestMethod.GET)
     String test()
     {
-        return "it is my test";
+        return "it is my test  aaaaaaadssdsdssssssssssss";
     }
+
+
 }
