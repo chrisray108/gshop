@@ -46,9 +46,10 @@ export const asyncRouterMap = [
     hidden:false,
     children: [     
      {path: '/dashboard',name: 'Dashboard',icon:'speedometer',component: _import('Dashboard2')},
-     {path: '/members', name:'Members', icon:'person', component: _import('datas'),
+     {path: '/datas', name:'数据列表', icon:'ios-analytics',
          component: {render (c) { return c('router-view') }},
-         children: [ {path: 'buttons',name: 'Buttons按钮',icon:'social-youtube',component: _import('components/Buttons'), hidden:false, },
+         children: [ {path: 'members', name:'Members', icon:'person', component: _import('datas')},
+                     {path: 'buttons',name: 'Buttons按钮',icon:'social-youtube',component: _import('components/Buttons'), hidden:false, },
                      {path: 'hoverbuttons',name: '悬停特效按钮',icon:'wand',component: _import('components/HoverButtons')},
                      {path: 'alert',name: 'Alert警告提示',icon:'alert',component: _import('components/Alert')},
                      {path: 'card',name: 'Card卡片',icon:'ios-browsers-outline',component: _import('components/Card')},
