@@ -5,11 +5,17 @@ const uuidv1 = require('uuid/v1');
 var moment   = require('moment');
 
 var userSqlMap = {
-    insert: 'INSERT INTO MU_MANAGERS VALUES (?,?,?,?,?)',
-    deleteById: 'delete from user where id = ?',
+    insert: 'INSERT INTO MU_MANAGERS(manager_id, manager_token, manager_createtime, manager_nick, manager_avatar) VALUES (?,?,?,?,?)',
+    deleteById: 'update mu_managers set manager_valid = 0 where manager_id = ?',
     update: 'update user set username=?, password=? where id=?',
-    list: 'select * from MU_MANAGERS left outer join MU_MANAGERS_AUTHORITY \
-    	on MU_MANAGERS.MANAGER_ID = MU_MANAGERS_AUTHORITY.MANAGER_ID',
+    list: 'SELECT manager.manager_id,\
+                  manager.manager_createtime,\
+                  manager.manager_token,\
+                  manager.manager_nick,\
+                  manager.manager_avatar\
+           FROM mu_managers\
+           AS manager LEFT OUTER JOIN mu_managers_authority AS authority ON manager.manager_id = authority.manager_id\
+           WHERE manager.manager_valid=1',
     getById: 'select * from user where id = ?'
 };
 
@@ -36,7 +42,6 @@ router.post('/add', function(req, res, next) {
             token   :   req.body.token,
             timetag :   moment().format("YYYY-MM-DD HH:mm:ss"),
         }
-        console.log([user.userId, user.token, user.timetag, user.nick, user.avatar]);
         query(userSqlMap.insert, [user.userId, user.token, user.timetag, user.nick, user.avatar], function(err, result) {
             if (err) {
                 res.status(400).send('Sorry, The operation couldn’t be completed:' + err);                           
@@ -54,6 +59,27 @@ router.post('/add', function(req, res, next) {
     }
 });
 
+
+router.post('/remove', function(req, res, next) {
+    req.assert('userId', 'user id is required').notEmpty()  
+    var errors = req.validationErrors()
+    if( !errors ) 
+    {
+        query(userSqlMap.deleteById, req.body.userId, function(err,results,fields){  
+            if (err) throw err
+            res.status(200).send(results);     
+        });
+    }
+    else
+    {
+        var error_msg = '';
+        errors.forEach(function(error) 
+        {
+            error_msg += error.msg + '<br>'
+        })
+        res.status(414).send('Sorry, The param is not passed: ' + error_msg);
+    }    
+});
 
 
 module.exports = router;

@@ -1,0 +1,7 @@
+curl -X POST --data "token=123456&nick=admin&avatar=https://ss0.bdstatic.com/70cFuHSh_Q1YnxGkpoWK1Hhy/it/u=3030191032,1588401994&fm=27&gp=0.jpg'" http://localhost:3000/users/add
+
+
+curl http://localhost:3000/users/query
+
+
+curl -X POST --data "userId=03dbfcd0-666c-11e8-b831-5fafb2f66efe" http://localhost:3000/users/remove
