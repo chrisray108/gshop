@@ -1,7 +1,14 @@
-curl -X POST --data "token=123456&nick=admin&avatar=https://ss0.bdstatic.com/70cFuHSh_Q1YnxGkpoWK1Hhy/it/u=3030191032,1588401994&fm=27&gp=0.jpg'" http://localhost:3000/users/add
+export host=localhost:3000
+export host=10.242.250.136:3000 
 
 
-curl http://localhost:3000/users/query
+curl -X POST --data "token=123456&nick=admin&avatar=https://ss0.bdstatic.com/70cFuHSh_Q1YnxGkpoWK1Hhy/it/u=3030191032,1588401994&fm=27&gp=0.jpg&email=admin@admin.com" http://$host/users/add
 
 
-curl -X POST --data "userId=03dbfcd0-666c-11e8-b831-5fafb2f66efe" http://localhost:3000/users/remove
+curl http://$host/users/query
+
+
+curl -X POST --data "userId=03dbfcd0-666c-11e8-b831-5fafb2f66efe" http://$host/users/remove
+
+curl -X POST --data "email=admin@admin.com&token=e10adc3949ba59abbe56e057f20f883e" http://$host/users/regist
+

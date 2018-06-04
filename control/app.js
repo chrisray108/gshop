@@ -8,6 +8,7 @@ var expressValidator = require('express-validator');
 
 var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');
+var loginRouter = require('./routes/login');
 
 var app = express();
 
@@ -25,11 +26,13 @@ app.use(expressValidator());
 
 app.use('/', indexRouter);
 app.use('/users', usersRouter);
+app.use('/login', loginRouter);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
   res.status(404).send('404: method not find\n');
 });
+
 
 // error handler
 app.use(function(err, req, res, next) {

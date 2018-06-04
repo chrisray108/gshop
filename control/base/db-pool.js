@@ -7,11 +7,14 @@ var pool  = mysql.createPool({
     port: 3306  
 });  
   
-var query = function(sql,options,callback){  
+var query = function(sql,options,callback){
     pool.getConnection(function(err,conn){  
-        if(err){  
+        if(err)
+        {  
             callback(err,null,null);  
-        }else{  
+        }
+        else
+        {  
             conn.query(sql,options,function(err,results,fields){  
                 conn.release();  
                 callback(err,results,fields);  
