@@ -1,5 +1,6 @@
 import { loginByEmail, logout, getInfo } from 'api/login';
 import Cookies from 'js-cookie';
+var MD5 = require('md5.js')
 
 const user = {
   state: {
@@ -66,9 +67,8 @@ const user = {
     LoginByEmail({ commit }, userInfo) {
       const email = userInfo.email.trim();
       return new Promise((resolve, reject) => {
-        loginByEmail(email, userInfo.password).then(response => {
-          const data = response.data;
-          console.log(response.data);
+          loginByEmail(email, new MD5().update(userInfo.password).digest('hex')).then(response => {
+          const data = response.data;          
           Cookies.set('Admin-Token', response.data.token);
           commit('SET_TOKEN', data.token);
           commit('SET_EMAIL', email);
