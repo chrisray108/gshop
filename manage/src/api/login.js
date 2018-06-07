@@ -23,7 +23,6 @@ export function getInfo(token) {
   return fetch({
     url: '/user/query',
     method: 'get',
-    params: { token }
   });
 }
 

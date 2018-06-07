@@ -40,7 +40,7 @@ var addUser = function(req, res, next){
             email   :   req.sanitize('email').escape(),
             nick    :   req.sanitize('nick').escape(),
             avatar  :   req.sanitize('avatar').escape(),
-            pwd   :   req.sanitize('password').escape(),
+            pwd     :   req.sanitize('password').escape(),
             timetag :   moment().format("YYYY-MM-DD HH:mm:ss"),
         }
         query(userSqlMap.insert, [user.userId, user.pwd, user.timetag, user.nick, user.avatar, user.email], function(err, result) {
@@ -64,7 +64,7 @@ var addUser = function(req, res, next){
 
 
 router.get('/query', function(req, res, next) {
-    var uid = req.sanitize('uid').escape();
+    var uid = sanitizer.escape(req.session.loginId);
     console.log(uid)
     if (uid == undefined) 
     {
@@ -78,7 +78,7 @@ router.get('/query', function(req, res, next) {
         query(userSqlMap.getById, uid, function(err,results,fields)
         {
             if (err) throw err            
-            res.status(200).send({"res":results});          
+            res.status(200).send({"res":results[0]});          
         });        
     }    
 });

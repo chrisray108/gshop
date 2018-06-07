@@ -83,12 +83,13 @@ const user = {
     GetInfo({ commit, state }) {
       return new Promise((resolve, reject) => {
         getInfo(state.token).then(response => {
-          const data = response.data;
-          commit('SET_ROLES', data.role);
-          commit('SET_NAME', data.name);
-          commit('SET_AVATAR', data.avatar);
-          commit('SET_UID', data.uid);
-          commit('SET_INTRODUCTION', data.introduction);
+          const data = response.data.res;
+          //先不做权限
+          commit('SET_ROLES', ['admin']);
+          commit('SET_NAME', data.manager_nick);
+          commit('SET_AVATAR', data.manager_avatar);
+          commit('SET_UID', data.manager_id);
+          commit('SET_EMAIL', data.manager_email);
           resolve(response);
         }).catch(error => {
           reject(error);

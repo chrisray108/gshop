@@ -35,7 +35,7 @@ router.post('/loginByEmail', function(req, res, next) {
                            {
                                return res.status(errorCode.serverError).send();;                
                            }            
-                           req.session.loginId = result[0].manager_id;                           
+                           req.session.loginId = result[0].manager_id;
                            res.status(errorCode.success).send({"sid":req.session.loginId});
                        });                       
             	}
