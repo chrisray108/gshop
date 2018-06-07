@@ -5,9 +5,12 @@ var cookieParser = require('cookie-parser');
 var logger  = require('morgan');
 var expressSanitizer = require('express-sanitizer');
 var expressValidator = require('express-validator');
+var session          = require('express-session');
+var redisStore       = require('connect-redis')(session);
+
 
 var indexRouter = require('./routes/index');
-var usersRouter = require('./routes/users');
+var usersRouter = require('./routes/user');
 var loginRouter = require('./routes/login');
 
 var app = express();
@@ -24,6 +27,18 @@ app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 app.use(expressValidator());
 
+app.use(session({
+    name: 'gshop-admin-sid',
+    secret: 'Dm3fGUU#!edCn83?wYa8Rgl^#dnDwxf1XGa',  // 用来对session id相关的cookie进行签名
+    store: new redisStore({ host: 'localhost', port: 6379, ttl : 600}),
+    saveUninitialized: false,  // 是否自动保存未初始化的会话，建议false
+    resave: false,             // 是否每次都重新保存会话，建议false
+    cookie: {
+        httpOnly: true,
+        maxAge: 600 * 1000  // 有效期，单位是毫秒
+    }
+}));
+
 
 app.all('*', function(req, res, next) {
     res.header("Access-Control-Allow-Origin", "http://localhost:9002");
@@ -38,7 +53,7 @@ app.all('*', function(req, res, next) {
 
 
 app.use('/', indexRouter);
-app.use('/users', usersRouter);
+app.use('/user', usersRouter);
 app.use('/login', loginRouter);
 
 

@@ -21,7 +21,7 @@ export function logout() {
 
 export function getInfo(token) {
   return fetch({
-    url: '/user/info',
+    url: '/user/query',
     method: 'get',
     params: { token }
   });

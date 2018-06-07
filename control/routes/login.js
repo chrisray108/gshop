@@ -3,6 +3,7 @@ var router    = express.Router();
 var query     = require("../base/db-pool");
 var errorCode = require("../base/error-code");
 
+
 var sqlMap = {
     loginByEmail: 'select manager_id from mu_managers where manager_email = ? and manager_pwd = ?',
 };
@@ -29,7 +30,14 @@ router.post('/loginByEmail', function(req, res, next) {
             {
             	if (result.length) 
             	{
-                    res.status(errorCode.success).send();
+            		  req.session.regenerate(function(err) {
+                           if(err)
+                           {
+                               return res.status(errorCode.serverError).send();;                
+                           }            
+                           req.session.loginId = result[0].manager_id;                           
+                           res.status(errorCode.success).send({"sid":req.session.loginId});
+                       });                       
             	}
             	else
             	{

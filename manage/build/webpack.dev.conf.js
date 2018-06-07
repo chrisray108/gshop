@@ -22,7 +22,8 @@ module.exports = merge(baseWebpackConfig, {
     },
     
     // cheap-source-map is faster for development
-    devtool: '#cheap-source-map',
+    //devtool: '#cheap-source-map',
+    devtool: '#source-map',
     cache: true,
     plugins: [
         new webpack.DefinePlugin({

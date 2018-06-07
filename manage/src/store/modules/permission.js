@@ -78,10 +78,7 @@ const permission = {
           }
       
         })
-      
-
      }
-
   },
   actions: {
     GenerateRoutes({ commit }, data) {

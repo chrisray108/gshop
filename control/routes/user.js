@@ -18,7 +18,12 @@ var userSqlMap = {
            FROM mu_managers\
            AS manager LEFT OUTER JOIN mu_managers_authority AS authority ON manager.manager_id = authority.manager_id\
            WHERE manager.manager_valid=1',
-    getById: 'select * from user where id = ?'
+    getById: 'SELECT manager.manager_id, \
+                     manager.manager_nick,\
+                     manager.manager_avatar,\
+                     manager.manager_email\
+              FROM mu_managers AS manager \
+              WHERE manager.manager_valid=1 and manager.manager_id=?',
 };
 
 
@@ -59,10 +64,23 @@ var addUser = function(req, res, next){
 
 
 router.get('/query', function(req, res, next) {
-    query(userSqlMap.list, null, function(err,results,fields){  
-  	   if (err) throw err
-       res.status(200).send(results);          
-    });
+    var uid = req.sanitize('uid').escape();
+    console.log(uid)
+    if (uid == undefined) 
+    {
+         query(userSqlMap.list, null, function(err,results,fields){  
+           if (err) throw err
+           res.status(200).send({"res":results});          
+         });        
+    }
+    else
+    {
+        query(userSqlMap.getById, uid, function(err,results,fields)
+        {
+            if (err) throw err            
+            res.status(200).send({"res":results});          
+        });        
+    }    
 });
 
 
