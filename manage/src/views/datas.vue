@@ -1,16 +1,7 @@
 <template>
   <div class="animated fadeIn">
-    
-
-    <Row>
-      <Col :sm="24" :md="24" :lg="12">
-        <h3>框架在手，天下我有</h3>
-        <p>好用的框架决定了一个程序员的效率</p>
-      </Col>
-    </Row>
     <br><br>
     <Table stripe :columns="columns1" :data="data1"></Table>
-
   </div>
 </template>
 
@@ -18,47 +9,50 @@
 </style>
 
 <script>
-
+    import axios from 'axios'
     export default {
         data () {
             return {
                columns1: [
                     {
-                        title: '姓名',
-                        key: 'name'
+                        title: '花名',
+                        key: 'manager_nick'
                     },
                     {
-                        title: '年龄',
-                        key: 'age'
+                        title: '邮箱',
+                        key: 'manager_email'
                     },
                     {
-                        title: '地址',
-                        key: 'address'
-                    }
+                        title: '创建时间',
+                        key: 'manager_createtime'
+                    },
+                    {
+                        title: '头像',
+                        key: 'manager_avatar'
+                    },
                 ],
                 data1: [
-                    {
-                        name: '王小明',
-                        age: 18,
-                        address: '北京市朝阳区芍药居'
-                    },
-                    {
-                        name: '张小刚',
-                        age: 25,
-                        address: '北京市海淀区西二旗'
-                    },
-                    {
-                        name: '李小红',
-                        age: 30,
-                        address: '上海市浦东新区世纪大道'
-                    },
-                    {
-                        name: '周小伟',
-                        age: 26,
-                        address: '深圳市南山区深南大道'
-                    }
+                    
                 ]
             }
         },
+        beforeCreate:function(){
+           let that = this;
+           this.$store.dispatch('GetUserList').then((datas) => { 
+                 var datac = [];
+
+                 for(var index in datas)
+                 {
+                    var item = {};
+                    for(var column in that.$data.columns1)
+                    {
+                        let key = that.$data.columns1[column].key;
+                        item[key] = datas[index][key];                
+                    }
+                    datac[index] = item;
+                 }
+                 that.$data.data1 = datac;
+           });
+        }
       }
 </script>

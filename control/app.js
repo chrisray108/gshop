@@ -27,6 +27,7 @@ app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 app.use(expressValidator());
 
+
 app.use(session({
     name: 'gshop-admin-sid',
     secret: 'Dm3fGUU#!edCn83?wYa8Rgl^#dnDwxf1XGa',  // 用来对session id相关的cookie进行签名
@@ -37,7 +38,6 @@ app.use(session({
         maxAge: 600 * 1000  // 有效期，单位是毫秒
     }
 }));
-
 
 app.all('*', function(req, res, next) {
     res.header("Access-Control-Allow-Origin", "http://localhost:9002");
@@ -50,6 +50,17 @@ app.all('*', function(req, res, next) {
     else
     next();
 });
+
+app.get('/', function(req, res, next){
+    var sess = req.session;
+    var loginUser = sess.loginId;
+    var isLogined = !!loginUser;
+    if(isLogined) next();
+    else
+    res.send(417);
+});
+
+
 
 
 app.use('/', indexRouter);

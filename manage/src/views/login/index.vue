@@ -115,7 +115,13 @@
                 this.loading = false;
                 this.$router.push({ path: '/' });
               }).catch(err => {
-                if(err.response.status == 302)
+                if(err.response == undefined)
+                {
+                   this.$Message.error("未知错误");
+                }
+                else
+                {
+                  if(err.response.status == 302)
                 {
                    this.$Message.error("账号密码错误");
                 }                
@@ -124,7 +130,7 @@
                    this.$Message.error("系统出错，代码:" + err.response.status);
                    this.loading = false;
                 }
-                
+              }                                
               });
             } else {
               console.log('error submit!!');

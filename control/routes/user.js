@@ -11,7 +11,6 @@ var userSqlMap = {
     update: 'update user set username=?, password=? where id=?',
     list: 'SELECT manager.manager_id,\
                   manager.manager_createtime,\
-                  manager.manager_pwd,\
                   manager.manager_nick,\
                   manager.manager_avatar,\
                   manager.manager_email\
@@ -64,23 +63,25 @@ var addUser = function(req, res, next){
 
 
 router.get('/query', function(req, res, next) {
-    var uid = sanitizer.escape(req.session.loginId);
-    console.log(uid)
-    if (uid == undefined) 
+
+    var uid = sanitizer.escape(req.uid);
+    if (uid == undefined)
     {
-         query(userSqlMap.list, null, function(err,results,fields){  
-           if (err) throw err
-           res.status(200).send({"res":results});          
-         });        
+        uid = req.session.loginId;
     }
-    else
+    query(userSqlMap.getById, uid, function(err,results,fields){  
+       if (err) throw err            
+       res.status(200).send({"res":results[0]});          
+    }); 
+});
+
+
+router.get('/queryList', function(req, res, next) {    
+    query(userSqlMap.list, null, function(err,results,fields)
     {
-        query(userSqlMap.getById, uid, function(err,results,fields)
-        {
-            if (err) throw err            
-            res.status(200).send({"res":results[0]});          
-        });        
-    }    
+        if (err) throw err            
+        res.status(200).send({"res":results});          
+    });        
 });
 
 

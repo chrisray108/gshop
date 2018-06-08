@@ -1,4 +1,5 @@
 import { loginByEmail, logout, getInfo } from 'api/login';
+import { getUserList } from 'api/operate';
 import Cookies from 'js-cookie';
 var MD5 = require('md5.js')
 
@@ -95,6 +96,18 @@ const user = {
           reject(error);
         });
       });
+    },
+
+    // 获取用户列表
+    GetUserList({ commit, state }) {
+          return new Promise((resolve, reject) => {
+              getUserList().then(response => {
+                  const data = response.data.res;
+                  resolve(data);
+              }).catch(error => {
+                  reject(error);
+              });
+          });
     },
 
     // 第三方验证登录
