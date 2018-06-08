@@ -11,7 +11,7 @@ const user = {
     code: '',
     uid: undefined,
     auth_type: '',
-    token: Cookies.get('gshop-admin-sid'),
+    token:Cookies.get('Admin-Token'),
     name: '',
     avatar: '',
     introduction: '',
@@ -69,7 +69,8 @@ const user = {
       const email = userInfo.email.trim();
       return new Promise((resolve, reject) => {
           loginByEmail(email, new MD5().update(userInfo.password).digest('hex')).then(response => {
-          const sid = response.data.sid;            
+          const sid = response.data.sid;
+          Cookies.set('Admin-Token', sid);
           commit('SET_TOKEN', sid);
           commit('SET_EMAIL', email);
           resolve();
@@ -116,7 +117,6 @@ const user = {
         commit('SET_CODE', code);
         loginByThirdparty(state.status, state.email, state.code, state.auth_type).then(response => {
           commit('SET_TOKEN', response.data.token);
-          //Cookies.set('Admin-Token', response.data.token);
           resolve();
         }).catch(error => {
           reject(error);
