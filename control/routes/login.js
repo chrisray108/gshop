@@ -5,7 +5,7 @@ var errorCode = require("../base/error-code");
 
 
 var sqlMap = {
-    loginByEmail: 'select manager_id from mu_managers where manager_email = ? and manager_pwd = ?',
+    loginByEmail: 'select manager_id from mu_managers where manager_email = ? and manager_pwd = ? and manager_valid = 1',
 };
 
 

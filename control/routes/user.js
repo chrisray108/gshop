@@ -70,8 +70,17 @@ router.get('/query', function(req, res, next) {
         uid = req.session.loginId;
     }
     query(userSqlMap.getById, uid, function(err,results,fields){  
-       if (err) throw err            
-       res.status(200).send({"res":results[0]});          
+       if (err) throw err   
+       var user = results[0];
+       if(user != undefined)
+       {
+          resolveUserAvatar([user]);         
+          res.status(200).send({"res":user});          
+       }
+       else
+       {
+          res.status(414).send();
+       }       
     }); 
 });
 
@@ -79,7 +88,8 @@ router.get('/query', function(req, res, next) {
 router.get('/queryList', function(req, res, next) {    
     query(userSqlMap.list, null, function(err,results,fields)
     {
-        if (err) throw err            
+        if (err) throw err 
+        resolveUserAvatar(results);           
         res.status(200).send({"res":results});          
     });        
 });
@@ -111,6 +121,17 @@ router.post('/remove', function(req, res, next) {
         res.status(414).send('Sorry, The param is not passed: ' + error_msg);
     }    
 });
+
+
+function resolveUserAvatar(users)
+{
+    if (users != undefined)
+    {
+        users.forEach(function(user){
+           user.manager_avatar = sanitizer.unescapeEntities(user.manager_avatar);
+        });
+    }    
+}
 
 
 

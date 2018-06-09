@@ -1,7 +1,7 @@
 <template>
   <div class="animated fadeIn">
     <br><br>
-    <Table stripe :columns="columns1" :data="data1"></Table>
+    <Table highlight-row ref="currentRowTable" stripe :columns="columns1" :data="data1"></Table>
   </div>
 </template>
 
@@ -15,8 +15,18 @@
             return {
                columns1: [
                     {
-                        title: '花名',
-                        key: 'manager_nick'
+                        title: '名称',
+                        key: 'manager_nick',
+                        render: (h, params) => {
+                            return h('div', [
+                                h('Icon', {
+                                    props: {
+                                        type: 'person'
+                                    }
+                                }),
+                                h('strong', params.row.manager_nick)
+                            ]);
+                        }
                     },
                     {
                         title: '邮箱',
@@ -28,8 +38,45 @@
                     },
                     {
                         title: '头像',
-                        key: 'manager_avatar'
+                        key: 'manager_avatar',
+                        width: 100,
+                        render: (h, params) => {
+                            return h('div', [
+                                h('img', {
+                                    attrs: {
+                                        src: params.row.manager_avatar,
+                                        alt: params.row.manager_avatar
+                                    },
+                                    style: {
+                                        width: '40px',
+                                        height: '40px'
+                                    }   
+                                }),
+                            ]);
+                        }
+
                     },
+                    {
+                        title: '操作',
+                        key: 'manager_id',
+                        width: 150,
+                        align: 'center',
+                        render: (h, params) => {
+                            return h('div', [                               
+                                h('Button', {
+                                    props: {
+                                        type: 'error',
+                                        size: 'small'
+                                    },
+                                    on: {
+                                        click: () => {
+                                            this.removeUser(params.row.manager_id, params.index)
+                                        }
+                                    }
+                                }, '删除')
+                            ]);
+                        }
+                    }
                 ],
                 data1: [
                     
@@ -53,6 +100,19 @@
                  }
                  that.$data.data1 = datac;
            });
+        },
+
+        methods:{
+            removeUser(userId, index){
+                let that = this;
+                this.$store.dispatch('RemoveUser',userId).then((datas) => { 
+                     that.data1.splice(index, 1);
+                }).catch(error => {
+                     that.$Message.error(error.response.data);
+                });            
+            }
         }
+
       }
+
 </script>

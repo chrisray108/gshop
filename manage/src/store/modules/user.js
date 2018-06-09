@@ -1,5 +1,5 @@
 import { loginByEmail, logout, getInfo } from 'api/login';
-import { getUserList } from 'api/operate';
+import { getUserList, removeUser} from 'api/operate';
 import Cookies from 'js-cookie';
 var MD5 = require('md5.js')
 
@@ -100,7 +100,7 @@ const user = {
     },
 
     // 获取用户列表
-    GetUserList({ commit, state }) {
+    GetUserList({ commit }) {
           return new Promise((resolve, reject) => {
               getUserList().then(response => {
                   const data = response.data.res;
@@ -110,6 +110,19 @@ const user = {
               });
           });
     },
+
+    RemoveUser({ commit }, userId) {
+          return new Promise((resolve, reject) => {
+              removeUser(userId).then(response => {
+                  const data = response.data.res;
+                  resolve(data);
+              }).catch(error => {
+                  reject(error);
+              });
+          });
+    },
+
+    
 
     // 第三方验证登录
     LoginByThirdparty({ commit, state }, code) {

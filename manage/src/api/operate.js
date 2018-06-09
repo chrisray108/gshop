@@ -6,3 +6,15 @@ export function getUserList() {
     method: 'get',
   });
 }
+
+
+export function removeUser(userId) {
+  const data = {
+    userId
+  };
+  return fetch({
+    url: '/user/remove',
+    method: 'post',
+    data,
+  });
+}
