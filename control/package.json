@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "start": "pm2 start settings.config.js",
-    "test" : "pm2 start settings.config.js --env test"
+    "test": "pm2 start settings.config.js --env test"
   },
   "dependencies": {
     "config-lite": "^2.1.0",
