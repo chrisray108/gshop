@@ -1,13 +1,10 @@
-var mysql = require("mysql");  
-var pool  = mysql.createPool({  
-    host: 'localhost',  
-    user: 'root',  
-    password: 'rootroot',  
-    database: 'mu_shop',  
-    port: 3306  
-});  
+var mysql  = require("mysql");  
+var config = require('config-lite')(__dirname);
+
+var pool  = mysql.createPool(config.mysql);  
   
 var query = function(sql,options,callback){
+    console.log(config.mysql)
     pool.getConnection(function(err,conn){  
         if(err)
         {  

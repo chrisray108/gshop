@@ -6,7 +6,7 @@ var logger  = require('morgan');
 var expressSanitizer = require('express-sanitizer');
 var expressValidator = require('express-validator');
 var session          = require('express-session');
-var redisStore       = require('connect-redis')(session);
+var config           = require('config-lite')(__dirname);
 
 
 var indexRouter = require('./routes/index');
@@ -28,16 +28,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.use(expressValidator());
 
 
-app.use(session({
-    name: 'gshop-admin-sid',
-    secret: 'Dm3fGUU#!edCn83?wYa8Rgl^#dnDwxf1XGa',  // 用来对session id相关的cookie进行签名
-    store: new redisStore({ host: 'localhost', port: 6379, ttl : 600}),
-    saveUninitialized: false,  // 是否自动保存未初始化的会话，建议false
-    resave: false,             // 是否每次都重新保存会话，建议false
-    cookie: {
-        maxAge: 600 * 1000  // 有效期，单位是毫秒
-    }
-}));
+app.use(session(config.session));
 
 app.all('*', function(req, res, next) {
     res.header("Access-Control-Allow-Origin", "http://localhost:9002");

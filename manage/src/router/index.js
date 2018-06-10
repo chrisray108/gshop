@@ -45,16 +45,24 @@ export const asyncRouterMap = [
     component: Full,
     hidden:false,
     children: [          
-     {path: '/datas', name:'数据列表', icon:'ios-analytics',
-         component: {render (c) { return c('router-view') }},
-         children: [ {path: 'members', name:'用户列表', icon:'person', component: _import('Datas')},                     
-                   ]
+     {  path: '/userDatas', name:'用户列表', icon:'ios-analytics', component: _import('UserDatas')},
+     {  path: '/shopSettings', name:'商店设置', icon:'ios-analytics',
+        component: {render (c) { return c('router-view') }},
+        children: 
+        [  
+          { path: 'introduction',name: '介绍',icon:'thumbsup',component: _import('Introduction')},
+        ]
      },
-      {path: '',name: '开发工具',icon:"stats-bars",
+     {  path: '',name: '开发工具',icon:"stats-bars",
         component: {render (c) { return c('router-view') }},
         children: [  
                      {path: 'introduction',name: '介绍',icon:'thumbsup',component: _import('Introduction')},
                      {path: 'dashboard',name: 'Dashboard',icon:'speedometer',component: _import('Dashboard2')},
+                     {path: 'table', name: '表格综合实例',icon:'ios-paper',component: _import('Table'),meta: { role: ['admin'] }},
+                     {path: 'jsontree', name: 'JSON视图',icon:'merge',component: _import('JsonTree')},
+                     {path: 'tabledetail/:id',name: 'TableDetail', hidden:true, component: _import('TableDetail')},
+                     {path: 'tinymce',name: 'Tinymce编辑器',icon:"android-document",component: _import('Tinymce')},
+                     {path: 'markdown',name: 'Markdown',icon:"android-list",component: _import('Markdown')},
                      {path: 'charts/shopchart',name: '商场统计图表',icon:'stats-bars',component: _import('charts/ShopChart'), hidden:false, },
                      {path: 'charts/radarchart',name: '雷达图',icon:'arrow-graph-up-right',component: _import('charts/RadarChart')},
                      {path: 'charts/cakechart',name: '蛋糕销量图表',icon:'ios-analytics',component: _import('charts/CakeChart')},
@@ -72,11 +80,6 @@ export const asyncRouterMap = [
                      {path: 'components/transfer',name: 'Transfer穿梭框',icon:'ios-pause-outline',component: _import('components/Transfer')},
                      {path: 'components/timepicker',name: 'Timepicker',icon:'ios-clock-outline',component: _import('components/Timepicker')},
                      {path: 'components/upload',name: 'Upload上传',icon:'ios-cloud-upload-outline',component: _import('components/Upload')},
-                     {path: 'table', name: '表格综合实例',icon:'ios-paper',component: _import('Table'),meta: { role: ['admin'] }},
-                     {path: 'jsontree', name: 'JSON视图',icon:'merge',component: _import('JsonTree')},
-                     {path: 'tabledetail/:id',name: 'TableDetail', hidden:true, component: _import('TableDetail')},
-                     {path: 'tinymce',name: 'Tinymce编辑器',icon:"android-document",component: _import('Tinymce')},
-                     {path: 'markdown',name: 'Markdown',icon:"android-list",component: _import('Markdown')},
                   ]
 
 
