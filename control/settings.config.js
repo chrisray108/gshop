@@ -24,7 +24,7 @@ module.exports = {
       // Git repository to clone
       "repo" : "git@github.com:chrisray108/gshop.git",
       // Path of the application on target servers
-      "path" : "/var/www/control/production",
+      "path" : "/var/www/production/gshop",
       // Can be used to give options in the format used in the configura-
       // tion file.  This is useful for specifying options for which there
       // is no separate command-line flag, see 'man ssh' 
@@ -41,24 +41,12 @@ module.exports = {
       "post-setup": "ls -la",
       // Commands to execute locally (on the same machine you deploy things)
       // Can be multiple commands separated by the character ";"
-      "pre-deploy-local" : "echo 'This is a local executed command'"
+      "pre-deploy-local" : "echo 'This is a local executed command'",
       // Commands to be executed on the server after the repo has been cloned
-      "post-deploy" : "cd control && npm install && pm2 startOrRestart settings.config.js --env production"
+      "post-deploy" : "cd control && npm install && pm2 startOrRestart settings.config.js --env production",
       // Environment variables that must be injected in all applications on this env
       "env"  : {
         "NODE_ENV": "production"
-      }
-    },
-    "staging" : {
-      "user" : "node",
-      "host" : "212.83.163.1",
-      "ref"  : "origin/master",
-      "repo" : "git@github.com:repo.git",
-      "path" : "/var/www/development",
-      "ssh_options": ["StrictHostKeyChecking=no", "PasswordAuthentication=no"],
-      "post-deploy" : "pm2 startOrRestart ecosystem.json --env dev",
-      "env"  : {
-        "NODE_ENV": "staging"
       }
     }
   }
