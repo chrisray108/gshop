@@ -44,6 +44,8 @@ app.all('*', function(req, res, next) {
 
 app.use('/login', loginRouter); 
 
+/* 先关掉 session 权限
+
 app.use('/', function(req, res, next){
     var sess = req.session;
     var loginUser = sess.loginId;
@@ -52,6 +54,8 @@ app.use('/', function(req, res, next){
     else
     res.status(417).send();
 });
+
+*/
 
 app.use('/', indexRouter);
 app.use('/user', usersRouter);
