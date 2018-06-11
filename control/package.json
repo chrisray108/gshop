@@ -3,7 +3,7 @@
   "version": "0.0.0",
   "private": true,
   "scripts": {
-    "start": "pm2 start settings.config.js",
+    "start": "pm2 start settings.config.js --watch",
     "production": "pm2 start settings.config.js --env production"
   },
   "dependencies": {

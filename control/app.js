@@ -28,7 +28,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.use(expressValidator());
 
 
-app.use(session(config.session));
+//app.use(session(config.session));
 
 app.all('*', function(req, res, next) {
     res.header("Access-Control-Allow-Origin", "http://localhost:9002");
@@ -42,13 +42,15 @@ app.all('*', function(req, res, next) {
     next();
 });
 
-app.get('/', function(req, res, next){
-    var sess = req.session;
-    var loginUser = sess.loginId;
-    var isLogined = !!loginUser;
-    if(isLogined) next();
-    else
-    res.send(417);
+app.use('/', function(req, res, next){
+    // var sess = req.session;
+    // var loginUser = sess.loginId;
+    // var isLogined = !!loginUser;
+    // if(isLogined) next();
+    // else
+    // res.status(417).send();
+    console.log('hello world');
+    res.status(200).send();
 });
 
 
