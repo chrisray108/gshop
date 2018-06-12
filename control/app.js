@@ -12,6 +12,7 @@ var config           = require('config-lite')(__dirname);
 var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/user');
 var loginRouter = require('./routes/login');
+var productionRouter = require('./routes/production');
 
 var app = express();
 
@@ -57,7 +58,7 @@ app.use('/', function(req, res, next){
 
 app.use('/', indexRouter);
 app.use('/user', usersRouter);
-
+app.use('/production', productionRouter);
 
 
 

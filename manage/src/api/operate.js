@@ -18,3 +18,11 @@ export function removeUser(userId) {
     data,
   });
 }
+
+
+export function getCategories() {
+  return fetch({
+    url: '/production/categoryList',
+    method: 'get',
+  });
+}

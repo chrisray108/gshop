@@ -45,12 +45,12 @@ export const asyncRouterMap = [
     component: Full,
     hidden:false,
     children: [          
-     {  path: '/userDatas', name:'用户列表', icon:'ios-analytics', component: _import('UserDatas')},
-     {  path: '/shopSettings', name:'商店设置', icon:'ios-analytics',
+     {  path: '/userdatas', name:'用户列表', icon:'ios-analytics', component: _import('UserDatas')},
+     {  path: '/shopsettings', name:'商店设置', icon:'ios-analytics',
         component: {render (c) { return c('router-view') }},
         children: 
         [  
-          { path: 'introduction',name: '介绍',icon:'thumbsup',component: _import('Introduction')},
+          { path: 'itemcategory',name: '商品分类',icon:'ios-pricetags',component: _import('shopSettings/ItemCategory')},
         ]
      },
      {  path: '',name: '开发工具',icon:"stats-bars",

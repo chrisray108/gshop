@@ -4,7 +4,6 @@ var config = require('config-lite')(__dirname);
 var pool  = mysql.createPool(config.mysql);  
   
 var query = function(sql,options,callback){
-    console.log(config.mysql)
     pool.getConnection(function(err,conn){  
         if(err)
         {  
