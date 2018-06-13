@@ -79,7 +79,27 @@
                             }
                             
                         }
-                    },                    
+                    }, 
+                    {
+                        title: '操作',
+                        key: 'cid',
+                        width: 150,
+                        align: 'center',
+                        render: (h, params) => {
+                            return h('div', [                               
+                                h('Button', {
+                                    props: {
+                                        type: 'error',
+                                    },
+                                    on: {
+                                        click: () => {
+                                            this.removeCategory(params.row.cid, params.index)
+                                        }
+                                    }
+                                }, '删除')
+                            ]);
+                        }
+                    }                   
                 ],
                 data1: [
                     
@@ -128,6 +148,16 @@
                      that.$Message.error("数据添加失败: " + error.response.status);
                      target.style.borderColor = "red"
                      target.focus()
+               });
+            },
+            removeCategory(categoryId,index)
+            {
+               let that = this;
+               this.$store.dispatch('RemoveCategory', categoryId).then((res) => 
+               { 
+                     that.$data.data1.splice(index,1);
+               }).catch(error => {
+                     that.$Message.error("数据删除失败: " + error.response.status);
                });
             }
         }

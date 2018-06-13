@@ -37,3 +37,15 @@ export function addCategory(category) {
     data,
   });
 }
+
+
+export function removeCategory(categoryId) {
+  const data = {
+    cid : categoryId
+  }
+  return fetch({
+    url: '/production/removeCategory',
+    method: 'post',
+    data,
+  });
+}

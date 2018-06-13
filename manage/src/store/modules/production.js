@@ -1,4 +1,4 @@
-import {getCategories, addCategory} from 'api/operate';
+import {getCategories, addCategory, removeCategory} from 'api/operate';
 
 const production = {
 	state:{},
@@ -17,6 +17,16 @@ const production = {
 	    AddCategory({ commit }, category) {
 	      return new Promise((resolve, reject) => {
 	          addCategory(category).then(response => {
+	          resolve(response.data);
+	        }).catch(error => {
+	          reject(error);
+	        });
+	      });
+	    },
+
+	    RemoveCategory({ commit }, categoryId) {
+	      return new Promise((resolve, reject) => {
+	          removeCategory(categoryId).then(response => {
 	          resolve(response.data);
 	        }).catch(error => {
 	          reject(error);

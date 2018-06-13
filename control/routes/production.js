@@ -9,6 +9,7 @@ var sanitizer = require('sanitizer');
 var productionSqlMap = {
     query:"select category_id as cid, category_name as name from MU_SPU_CATEGORY where category_valid=1 order by category_order",
     add:"insert into MU_SPU_CATEGORY (category_id, category_name, category_create_time, category_order) values (?,?,?,(select case when max(category_order) is null then 1 else max(category_order)+1 end from (select category_order from MU_SPU_CATEGORY)  as total))",
+    remove:"update MU_SPU_CATEGORY set category_valid = 0 where category_id = ?"
 };
 
 
@@ -16,7 +17,6 @@ var productionSqlMap = {
 router.get('/categoryList', function(req, res, next) {
     query(productionSqlMap.query, null, function(err,results,fields) {
             if (err) {
-                console.log(err);
                 res.status(400).send('Sorry, The operation couldn’t be completed:' + err);                           
             } else {     
                 console.log(JSON.stringify(results))                       	
@@ -40,7 +40,6 @@ router.post('/addCategory', function(req, res, next) {
         query(productionSqlMap.add, [category.categoryId, category.name, category.timetag], function(err,results,fields) 
         {
             if (err) { 
-                console.log(err);
                 res.status(400).send('Sorry, The operation couldn’t be completed:' + err);                           
             } else {                                
                 res.status(200).send(category);
@@ -57,6 +56,36 @@ router.post('/addCategory', function(req, res, next) {
     }
     
 });
+
+
+router.post('/removeCategory', function(req, res, next) {
+    req.assert('cid', 'category id is required').notEmpty()             
+    var errors = req.validationErrors()    
+    if( !errors ) 
+    {
+        let categoryId  =  req.sanitize('cid').escape();
+        query(productionSqlMap.remove, categoryId, function(err,result) 
+        {
+            if (err) { 
+                res.status(400).send('Sorry, The operation couldn’t be completed:' + err);                           
+            } else {                                
+                res.status(200).send();
+            }
+        })
+    }
+    else
+    {
+        var error_msg = '';
+        errors.forEach(function(error) {
+            error_msg += error.msg + '<br>'
+        });
+        res.status(414).send('Sorry, The param is not passed: ' + error_msg);            
+    }
+    
+});
+
+
+
 
 
 
