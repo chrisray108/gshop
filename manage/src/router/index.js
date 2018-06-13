@@ -44,8 +44,9 @@ export const asyncRouterMap = [
     name: '首页',
     component: Full,
     hidden:false,
-    children: [          
-     {  path: '/userdatas', name:'用户列表', icon:'ios-analytics', component: _import('UserDatas')},
+    children: [
+     {  path: '/shopitems', name:'商品', icon:'bag', component: _import('shopItems/Items')},
+     {  path: '/shopitemadd', name:'商品添加', icon:'', hidden:true, component: _import('shopItems/ItemAdd')},          
      {  path: '/shopsettings', name:'商店设置', icon:'ios-analytics',
         component: {render (c) { return c('router-view') }},
         children: 
@@ -53,6 +54,8 @@ export const asyncRouterMap = [
           { path: 'itemcategory',name: '商品分类',icon:'ios-pricetags',component: _import('shopSettings/ItemCategory')},
         ]
      },
+     {  path: '/userdatas', name:'用户列表', icon:'ios-analytics', component: _import('UserDatas')},
+
      {  path: '',name: '开发工具',icon:"stats-bars",
         component: {render (c) { return c('router-view') }},
         children: [  
