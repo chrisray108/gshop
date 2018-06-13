@@ -14,7 +14,7 @@
 
 <br>
 <br>
-  <Table highlight-row :show-header="true" ref="currentRowTable" stripe :columns="columns1" :data="data1"></Table>
+  <Table highlight-row :show-header="false" ref="currentRowTable" stripe :columns="columns1" :data="data1"></Table>
 
   </div>
 </template>
@@ -22,15 +22,15 @@
 
 
 <script>
-    import axios from 'axios'
     export default {
         data () {
+            let that = this;
             return {
                columns1: [
                     {
                         title: '名称',
-                        key: 'category_name',
-                        render: (h, params) => {
+                        key: 'name',                        
+                        render: (h, params) => {  
                             if (params.row == undefined || params.row.type == 'insert') 
                             {
                                return h('div', [
@@ -51,7 +51,8 @@
                                               }
                                               else
                                               {
-                                                
+                                                   event.target.style.borderColor = ""
+                                                   that.submitNewCategory({name:categoryName},event.target)
                                               }
                                            }
                                     }  
@@ -64,10 +65,16 @@
                                 h('Icon', {
                                     props: {
                                         type : 'social-dropbox',
-                                        size : 20,
+                                        size : 20
+                                    },
+                                },),
+                                h('strong', {
+                                    style: {
+                                        fontSize : '15px',
+                                        marginLeft : '20px' 
                                     }
-                                }),
-                                h('strong', params.row.category_name)
+                                  }, 
+                                  params.row.name),
                                ]);
                             }
                             
@@ -105,11 +112,24 @@
                 {
                   var item = {
                               type :  "insert",
-                              category_name : "",
+                              name : "",
+                              cid  : "",
                             }
                   this.$data.data1.unshift(item);
                 }                
             },
+            submitNewCategory(category,target)
+            {
+               let that = this;
+               this.$store.dispatch('AddCategory', category).then((res) => 
+               { 
+                     that.$set(that.$data.data1, 0, res)
+               }).catch(error => {
+                     that.$Message.error("数据添加失败: " + error.response.status);
+                     target.style.borderColor = "red"
+                     target.focus()
+               });
+            }
         }
 
       }

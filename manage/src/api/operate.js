@@ -26,3 +26,14 @@ export function getCategories() {
     method: 'get',
   });
 }
+
+
+
+export function addCategory(category) {
+  const data = category;
+  return fetch({
+    url: '/production/addCategory',
+    method: 'post',
+    data,
+  });
+}
