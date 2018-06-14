@@ -64,6 +64,7 @@ export const asyncRouterMap = [
                      {path: 'table', name: '表格综合实例',icon:'ios-paper',component: _import('Table'),meta: { role: ['admin'] }},
                      {path: 'jsontree', name: 'JSON视图',icon:'merge',component: _import('JsonTree')},
                      {path: 'tabledetail/:id',name: 'TableDetail', hidden:true, component: _import('TableDetail')},
+                     {path: 'components/upload',name: 'Upload上传',icon:'ios-cloud-upload-outline',component: _import('components/Upload')},
                      {path: 'tinymce',name: 'Tinymce编辑器',icon:"android-document",component: _import('Tinymce')},
                      {path: 'markdown',name: 'Markdown',icon:"android-list",component: _import('Markdown')},
                      {path: 'charts/shopchart',name: '商场统计图表',icon:'stats-bars',component: _import('charts/ShopChart'), hidden:false, },
@@ -82,7 +83,6 @@ export const asyncRouterMap = [
                      {path: 'components/timeline',name: 'Timeline时间轴',icon:'android-more-vertical',component: _import('components/Timeline')},
                      {path: 'components/transfer',name: 'Transfer穿梭框',icon:'ios-pause-outline',component: _import('components/Transfer')},
                      {path: 'components/timepicker',name: 'Timepicker',icon:'ios-clock-outline',component: _import('components/Timepicker')},
-                     {path: 'components/upload',name: 'Upload上传',icon:'ios-cloud-upload-outline',component: _import('components/Upload')},
                   ]
 
 
