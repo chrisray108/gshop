@@ -17,7 +17,7 @@ module.exports = {
     saveUninitialized: false,  // 是否自动保存未初始化的会话，建议false
     resave: false,             // 是否每次都重新保存会话，建议false
     cookie: {
-        maxAge: 600 * 1000  // 有效期，单位是毫秒
+        maxAge: 30 * 60 * 1000  // 有效期，单位是毫秒
     }
   }
 };

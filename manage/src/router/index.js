@@ -52,6 +52,7 @@ export const asyncRouterMap = [
         children: 
         [  
           { path: 'itemcategory',name: '商品分类',icon:'ios-pricetags',component: _import('shopSettings/ItemCategory')},
+          { path: 'itemspec',name: '商品规格',icon:'ios-list-outline',component: _import('shopSettings/ItemSpec')},
         ]
      },
      {  path: '/userdatas', name:'用户列表', icon:'ios-analytics', component: _import('UserDatas')},
