@@ -1,7 +1,7 @@
 <template>
   <div class="animated fadeIn">    
       <Affix :offset-top="100" style="width: 300px; margin-left: 600px;">
-           <span style="width: word-break:normal; width:auto; display:block; white-space:pre-wrap;word-wrap : break-word ;overflow: hidden ; background-color: #2b85e4; color: #ffffff">{{JSON.stringify(shopItem)}}</span>
+           <span style="width: word-break:normal; width:auto; display:block; white-space:pre-wrap;word-wrap : break-word ;overflow: hidden ; background-color: #2b85e4; color: #ffffff">{{JSON.stringify([shopItem,specOptions,specs])}}</span>
      </Affix>
     <Form ref="formValidate" :model="shopItem" :rules="ruleValidate" :label-width=0 >
           <Row>
@@ -56,10 +56,16 @@
           </Row>
           <div v-for="spec in specs">
                 <Row>
-                    <Col :md="4" :sm="24">
-                          <div><strong>商品规格</strong></div>
-                          <div>
-                              <Input placeholder="颜色、尺寸等等"></Input>
+                    <Col :md="5" :sm="24">
+                          <div><strong>商品规格</strong></div>                          
+                          <div>                             
+                              <Input placeholder="颜色、尺寸等等">
+                                   <select slot="prepend" v-model="shopItem.selectedCategoryId">
+                                        <option v-for="(item, index) in categories" :value="item.cid">
+                                              {{ item.name }} {{index}}
+                                        </option>
+                                   </select>
+                              </Input>
                           </div>
                     </Col>
                     <Col :md="{ span: 3, offset: 1 }" :sm="24">
@@ -199,6 +205,7 @@
 
                 },
                 specs:[{}],
+                specOptions:[],
                 categories:[],
 
             }
@@ -206,14 +213,26 @@
         beforeCreate:function(){
            let that = this;
            this.$Spin.show();
-           this.$store.dispatch('FetchCategories').then((datas) => {
+
+           var fetchCategories = this.$store.dispatch('FetchCategories');
+           var fetchSpecOptions = this.$store.dispatch('FetchSpecOptions');
+
+           // fetchSpecs.then((datas) => {                
+           //      that.$data.categories = datas  
+           //      resolve()             
+           // }).catch(error => {
+           //       target.style.borderColor = "red"
+           //       target.focus()
+           //       reject()
+           // });
+
+           Promise.all([fetchCategories,fetchSpecOptions]).then(function (results) {
+                that.$data.categories = results[0]
+                that.$data.specOptions = results[1]                
                 that.$Spin.hide();
-                that.$data.categories = datas               
            }).catch(error => {
                  that.$Spin.hide();
                  that.$Message.error("数据请求失败: " + error.response.status);
-                 target.style.borderColor = "red"
-                 target.focus()
             });
         },
 
