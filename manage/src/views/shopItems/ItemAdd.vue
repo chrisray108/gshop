@@ -1,9 +1,9 @@
 <template>
   <div class="animated fadeIn">    
       <Affix :offset-top="100" style="width: 300px; margin-left: 600px;">
-           <span style="width: word-break:normal; width:auto; display:block; white-space:pre-wrap;word-wrap : break-word ;overflow: hidden ; background-color: #2b85e4; color: #ffffff">{{JSON.stringify([shopItem,specOptions,specs])}}</span>
+           <span style="width: word-break:normal; width:auto; display:block; white-space:pre-wrap;word-wrap : break-word ;overflow: hidden ; background-color: #2b85e4; color: #ffffff">{{JSON.stringify([product,categories])}}</span>
      </Affix>
-    <Form ref="formValidate" :model="shopItem" :rules="ruleValidate" :label-width=0 >
+    <Form ref="formValidate" :model="product" :rules="ruleValidate" :label-width=0 >
           <Row>
                 <Col :md="20"  :sm="24">
                   <h6>商品信息</h6>
@@ -14,7 +14,7 @@
           </Row>
           <Row>
               <Col :md="8"  :sm="24">
-                    <Form-item prop="name" >
+                    <Form-item prop="mainPic" >
                       <div><strong>商品图片</strong></div>
                       <Upload multiple type="drag" action="\/\/jsonplaceholder.typicode.com/posts/">
                         <div style="padding: 90px 0">
@@ -30,7 +30,7 @@
                          <Col>
                             <Form-item prop="name">
                                 <div><strong>商品名称</strong></div>
-                                <Input v-model="shopItem.name" placeholder="请输入商品名称"></Input>
+                                <Input v-model="product.name" placeholder="请输入商品名称"></Input>
                            </Form-item>
                         </Col>
                     </Row>
@@ -38,7 +38,7 @@
                          <Col>
                              <Form-item prop="desc">
                               <div><strong>描述</strong></div>
-                                    <Input v-model="shopItem.desc" type="textarea" :autosize="{minRows: 8,maxRows: 12}" placeholder="请输入商品描述">                                    
+                                    <Input v-model="product.desc" type="textarea" :autosize="{minRows: 8,maxRows: 12}" placeholder="请输入商品描述">                                    
                                     </Input>
                              </Form-item>
                          </Col>
@@ -54,41 +54,38 @@
                   <br>
               </Col>
           </Row>
-          <div v-for="spec in specs">
+          <div v-for="keepItem in product.keepItems">
                 <Row>
                     <Col :md="5" :sm="24">
                           <div><strong>商品规格</strong></div>                          
                           <div>                             
                               <Input placeholder="颜色、尺寸等等">
-                                   <Select slot="prepend" style="width: 80px">
-                                        <Option v-for="(item, index) in specOptions" :value="item.opid">
-                                              {{ item.name }} {{index}}
-                                        </Option>
-                                   </Select>
                               </Input>
                           </div>
                     </Col>
                     <Col :md="{ span: 3, offset: 1 }" :sm="24">
                           <div><strong>价格</strong></div>
                           <div>
-                              <InputNumber :max="999999999" v-model="shopItem.prise" :formatter="value => `¥${value}`" :parser="value => value.replace(/¥s?|(,*)/g, '')">                        
+                              <InputNumber :max="999999999" v-model="keepItem.prise" :formatter="value => `¥${value}`" :parser="value => value.replace(/¥s?|(,*)/g, '')">                        
                               </InputNumber>
                           </div>
                     </Col>
                     <Col :md="3" :sm="24">
                           <div><strong>原价( 可不填 )</strong></div>
                            <div>
-                              <InputNumber :max="999999999" v-model="shopItem.originPrise" :formatter="value => `¥${value}`" :parser="value => value.replace(/¥s?|(,*)/g, '')">                        
+                              <InputNumber :max="999999999" v-model="keepItem.originPrise" :formatter="value => `¥${value}`" :parser="value => value.replace(/¥s?|(,*)/g, '')">                        
                               </InputNumber>
                           </div>
                     </Col>
                     <Col :md="{ span: 4, offset: 3 }" :sm="{ span: 12, offset: 0 }"  >
                           <div><strong>库存</strong></div>
                           <div>
-                              <Input>       
-                                  <CheckboxGroup slot="append" v-model="keepOption" @on-change="checkUnLimtedKeep">
-                                      <Checkbox label="不限库存"></Checkbox>
-                                  </CheckboxGroup>                           
+                              <Input v-if="keepItem.unlimitedCount" disabled="true" value="∞">
+                                  <Checkbox slot="append" v-model="keepItem.unlimitedCount">不限库存</Checkbox>
+                              </Input>
+
+                              <Input v-else v-model="keepItem.keepCount">
+                                  <Checkbox slot="append" v-model="keepItem.unlimitedCount">不限库存</Checkbox>
                               </Input>
                               
                           </div>
@@ -107,7 +104,7 @@
           
           <Row>
               <Col :md="4" :sm="24">
-                 <Button long @click="addNewSpec">＋ 添加商品规格</Button>
+                 <Button long @click="addNewKeepItem">＋ 添加商品规格</Button>
               </Col>
           </Row>
 
@@ -119,7 +116,7 @@
                   <hr style=" height:2px;border:none;border-top:1px solid #cfd8dc;" />         
                   <br>
                   <span>请在在商店设置里设置分类</span>
-                  <Select v-model="shopItem.selectedCategoryId" style="width:200px; display: block; margin-top: 20px">
+                  <Select v-model="product.selectedCategoryId" style="width:200px; display: block; margin-top: 20px">
                       <Option v-for="item in categories" :value="item.cid">
                         {{ item.name }}
                       </Option>
@@ -133,7 +130,7 @@
                   <br>
                   <hr style=" height:2px;border:none;border-top:1px solid #cfd8dc;" />         
                   <br>
-                  <Input placeholder="默认为 0 件">                                       
+                  <Input placeholder="默认为 0 件" v-model="product.sellCount">                                       
                       <span  slot="append" >件</span>                
                   </Input>
               </Col>
@@ -145,7 +142,7 @@
                   <br>
                   <hr style=" height:2px;border:none;border-top:1px solid #cfd8dc;" />         
                   <br>
-                  <RadioGroup v-model="shopItem.status">
+                  <RadioGroup v-model="product.status">
                     <Radio label="上架"></Radio>
                     <Radio label="仓库(下架)"></Radio>
                     <Radio label="定时上架"></Radio>
@@ -160,8 +157,8 @@
                   <br>
                   <hr style=" height:2px;border:none;border-top:1px solid #cfd8dc;" />         
                   <br>
-                  <Form-item prop="name">
-                          <mavon-editor style=" margin-top: 10px" v-model="content"/>
+                  <Form-item prop="detailDesc">
+                          <mavon-editor style=" margin-top: 10px" v-model="product.detailDesc"/>
                    </Form-item>
               </Col>
           </Row>
@@ -178,36 +175,38 @@
 
 <script>
   import  { mavonEditor } from 'mavon-editor';
-
   import 'mavon-editor/dist/css/index.css';
+
+  class KeepItem 
+  {
+    constructor() {
+    this.name = '';
+    this.prise = 0;
+    this.originPrise = 0;
+    this.keepCount = 0;
+    this.unlimitedCount = false;
+    }
+  }
     export default {
         components: { mavonEditor },
         data () {
             let that = this;
             return {
-               content:"",
-               shopItem: {
-                    name: '',
-                    prise:0,
-                    originPrise:0,
-                    keepCount:'',
-                    status:'',
-                    city: '',
-                    gender: '',
-                    interest: [],
-                    date: '',
-                    time: '',
-                    desc: '',
-                    selectedCategoryId: ''
+                product:{
+                     mainPic:"",
+                     name:"",
+                     desc:"",
+                     detailDesc:"",
+                     status:"",
+                     sellCount:'',
+                     keepItems:[new KeepItem()],
+                     keepOption:[],
+                     selectedCategoryId:"",
                 },
-                keepOption:[],
+                categories:[],
                 ruleValidate:{
 
                 },
-                specs:[{}],
-                specOptions:[],
-                categories:[],
-
             }
         },
         beforeCreate:function(){
@@ -215,11 +214,9 @@
            this.$Spin.show();
 
            var fetchCategories = this.$store.dispatch('FetchCategories');
-           var fetchSpecOptions = this.$store.dispatch('FetchSpecOptions');
 
-           Promise.all([fetchCategories,fetchSpecOptions]).then(function (results) {
+           Promise.all([fetchCategories]).then(function (results) {               
                 that.$data.categories = results[0]
-                that.$data.specOptions = results[1]                
                 that.$Spin.hide();
            }).catch(error => {
                  that.$Spin.hide();
@@ -240,9 +237,9 @@
            {
 
            },
-           addNewSpec()
+           addNewKeepItem()
            {
-              this.$data.specs.push({});
+              this.$data.product.keepItems.push(new KeepItem());
            }
         }
       }

@@ -1,5 +1,4 @@
 import {getCategories, addCategory, removeCategory} from 'api/category';
-import {getSpecOptions, addSpecOption, removeSpecOption} from 'api/spec';
 
 const production = {
 	state:{},
@@ -33,37 +32,7 @@ const production = {
 	          reject(error);
 	        });
 	      });
-	    },
-
-	    FetchSpecOptions({ commit }) {
-	      return new Promise((resolve, reject) => {
-	          getSpecOptions().then(response => {
-	          resolve(response.data);
-	        }).catch(error => {
-	          reject(error);
-	        });
-	      });
-	    },
-
-	    AddSpecOption({ commit }, option) {
-	      return new Promise((resolve, reject) => {
-	          addSpecOption(option).then(response => {
-	          resolve(response.data);
-	        }).catch(error => {
-	          reject(error);
-	        });
-	      });
-	    },
-
-	    RemoveSpecOption({ commit }, optionId) {
-	      return new Promise((resolve, reject) => {
-	          removeSpecOption(optionId).then(response => {
-	          resolve(response.data);
-	        }).catch(error => {
-	          reject(error);
-	        });
-	      });
-	    }
+	    },	   
     }
 };
 
