@@ -60,11 +60,11 @@
                           <div><strong>商品规格</strong></div>                          
                           <div>                             
                               <Input placeholder="颜色、尺寸等等">
-                                   <select slot="prepend" v-model="shopItem.selectedCategoryId">
-                                        <option v-for="(item, index) in categories" :value="item.cid">
+                                   <Select slot="prepend" style="width: 80px">
+                                        <Option v-for="(item, index) in specOptions" :value="item.opid">
                                               {{ item.name }} {{index}}
-                                        </option>
-                                   </select>
+                                        </Option>
+                                   </Select>
                               </Input>
                           </div>
                     </Col>
@@ -119,11 +119,11 @@
                   <hr style=" height:2px;border:none;border-top:1px solid #cfd8dc;" />         
                   <br>
                   <span>请在在商店设置里设置分类</span>
-                  <select v-model="shopItem.selectedCategoryId" style="width:200px; display: block; margin-top: 20px">
-                      <option v-for="item in categories" :value="item.cid">
+                  <Select v-model="shopItem.selectedCategoryId" style="width:200px; display: block; margin-top: 20px">
+                      <Option v-for="item in categories" :value="item.cid">
                         {{ item.name }}
-                      </option>
-                  </select>
+                      </Option>
+                  </Select>
               </Col>
           </Row>
           <br><br>
@@ -216,15 +216,6 @@
 
            var fetchCategories = this.$store.dispatch('FetchCategories');
            var fetchSpecOptions = this.$store.dispatch('FetchSpecOptions');
-
-           // fetchSpecs.then((datas) => {                
-           //      that.$data.categories = datas  
-           //      resolve()             
-           // }).catch(error => {
-           //       target.style.borderColor = "red"
-           //       target.focus()
-           //       reject()
-           // });
 
            Promise.all([fetchCategories,fetchSpecOptions]).then(function (results) {
                 that.$data.categories = results[0]
