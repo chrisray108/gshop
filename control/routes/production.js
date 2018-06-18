@@ -13,6 +13,10 @@ var productionSqlMap = {
 };
 
 
+router.post('/addProduct', function(req, res, next) {
+    
+}
+
 
 router.get('/categoryList', function(req, res, next) {
     query(productionSqlMap.query, null, function(err,results,fields) {

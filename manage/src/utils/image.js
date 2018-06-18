@@ -4,6 +4,10 @@ var qiniu = require('qiniu-js')
 /* 返回 桌面缩略图   75 * 75 */
 export function thumbImageUrl(url) {  
 
+  if (!url.length) {
+    return '';
+  }
+
   var mode = ''
   var w    = ''
   var h    = ''

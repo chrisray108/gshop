@@ -17,7 +17,7 @@
                     <Form-item prop="mainPic" >
                       <div><strong>商品图片</strong></div>                      
                       <Upload type="drag" action="#" :before-upload="handleUpload" class="upload-tool-class">
-                        <img :src="product.mainPic" :hidden="(product.mainPic.length == 0)" >
+                        <img :src="productPicture" :hidden="(productPicture.length == 0)" >
                         <div style="padding: 90px 0;">
                           <Icon type="ios-cloud-upload" size="44" style="color: #3399ff"></Icon>
                           <p>点击或将图片拖拽到这里上传</p>                          
@@ -60,7 +60,7 @@
                     <Col :md="5" :sm="24">
                           <div><strong>商品规格</strong></div>                          
                           <div>                             
-                              <Input placeholder="颜色、尺寸等等">
+                              <Input placeholder="颜色、尺寸等等" v-model="keepItem.specDesc">
                               </Input>
                           </div>
                     </Col>
@@ -144,9 +144,9 @@
                   <hr style=" height:2px;border:none;border-top:1px solid #cfd8dc;" />         
                   <br>
                   <RadioGroup v-model="product.status">
-                    <Radio label="上架"></Radio>
-                    <Radio label="仓库(下架)"></Radio>
-                    <Radio label="定时上架"></Radio>
+                    <Radio  label=1><span>上架</span></Radio>
+                    <Radio  label=2><span>仓库(下架)</span></Radio>
+                    <Radio  label=3><span>定时上架</span></Radio>
                   </RadioGroup>
               </Col>
           </Row>
@@ -182,11 +182,12 @@
   class KeepItem 
   {
     constructor() {
-    this.name = '';
-    this.prise = 0;
-    this.originPrise = 0;
-    this.keepCount = 0;
-    this.unlimitedCount = false;
+      this.name  = '';
+      this.prise = 0;
+      this.originPrise = 0;
+      this.keepCount = 0;
+      this.unlimitedCount = false;
+      this.specDesc  = '';
     }
   }
     export default {
@@ -211,6 +212,13 @@
                 },
             }
         },
+
+        computed: {
+          productPicture: function () {
+            return thumbImageUrl(this.$data.product.mainPic)
+          }
+        },
+
         beforeCreate:function(){
            let that = this;
            this.$Spin.show();
@@ -233,7 +241,14 @@
            },
            save()
            {
-              alert("save!");
+              let that = this
+              this.$store.dispatch('AddProduct',this.$data.product).then((res) => 
+               { 
+                  that.$Message.success("添加成功！");
+                  that.$router.back();
+               }).catch(error => {
+                  that.$Message.error("数据上传失败: " + error.response.status);
+               });
            },
            checkUnLimtedKeep(data)
            {
@@ -249,7 +264,7 @@
                this.$store.dispatch('Upload',file).then((res) => 
                { 
                   var imageLink = res
-                  that.$data.product.mainPic = thumbImageUrl(imageLink)
+                  that.$data.product.mainPic = imageLink
                }).catch(error => {
                   that.$Message.error("数据上传失败: " + error.response.status);
                });
