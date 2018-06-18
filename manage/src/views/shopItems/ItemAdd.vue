@@ -15,13 +15,14 @@
           <Row>
               <Col :md="8"  :sm="24">
                     <Form-item prop="mainPic" >
-                      <div><strong>商品图片</strong></div>
-                      <Upload multiple type="drag" action="\/\/jsonplaceholder.typicode.com/posts/">
-                        <div style="padding: 90px 0">
+                      <div><strong>商品图片</strong></div>                      
+                      <Upload type="drag" action="#" :before-upload="handleUpload" class="upload-tool-class">
+                        <img :src="product.mainPic" :hidden="(product.mainPic.length == 0)" >
+                        <div style="padding: 90px 0;">
                           <Icon type="ios-cloud-upload" size="44" style="color: #3399ff"></Icon>
-                          <p>点击或将图片拖拽到这里上传</p>
-                        </div>
-                      </Upload>
+                          <p>点击或将图片拖拽到这里上传</p>                          
+                        </div>                        
+                      </Upload>                      
                     </Form-item>
               </Col>    
 
@@ -176,7 +177,8 @@
 <script>
   import  { mavonEditor } from 'mavon-editor';
   import 'mavon-editor/dist/css/index.css';
-
+  import { thumbImageUrl } from 'utils/image';
+  
   class KeepItem 
   {
     constructor() {
@@ -240,8 +242,32 @@
            addNewKeepItem()
            {
               this.$data.product.keepItems.push(new KeepItem());
+           },
+           handleUpload(file)
+           {
+               let that = this;
+               this.$store.dispatch('Upload',file).then((res) => 
+               { 
+                  var imageLink = res
+                  that.$data.product.mainPic = thumbImageUrl(imageLink)
+               }).catch(error => {
+                  that.$Message.error("数据上传失败: " + error.response.status);
+               });
+               return false;
            }
         }
       }
 
 </script>
+
+<style type="text/css">
+.upload-tool-class img {
+    position: absolute; 
+    height: 100%; 
+    width: 100%;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+}
+</style>

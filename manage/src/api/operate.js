@@ -20,3 +20,9 @@ export function removeUser(userId) {
 }
 
 
+export function fetchToken() {
+  return fetch({
+    url: '/upload/fetchToken',
+    method: 'post',
+  });
+}

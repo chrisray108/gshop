@@ -4,6 +4,7 @@ import app from './modules/app';
 import user from './modules/user';
 import permission from './modules/permission';
 import production from './modules/production';
+import upload from './modules/upload';
 
 import getters from './getters';
 
@@ -14,7 +15,8 @@ const store = new Vuex.Store({
     app,
     user,
     permission,
-    production
+    production,
+    upload,
   },
   getters
 });
