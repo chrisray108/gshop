@@ -26,15 +26,14 @@ CREATE TABLE `MU_SPU` (
 `PRODUCT_ID` varchar(64) NOT NULL COMMENT '产品ID',
 `BRAND_ID` varchar(64) NULL,
 `PRODUCT_NAME` varchar(64) NOT NULL,
-`PRODUCT_SUB_NAME` varchar(64) NULL,
-`PRODUCT_ENA` varchar(64) NOT NULL COMMENT '产品编码',
+`PRODUCT_ENA` varchar(64) NULL COMMENT '产品编码',
 `PRODUCT_DESC` varchar(512) NULL,
 `PRODUCT_DETAIL_ID` varchar(64) NULL,
 `PRODUCT_CATEGORY_ID` varchar(64) NULL,
 `PRODUCT_SUBCATEGORY_ID` varchar(64) NULL,
-`PRODUCT_STATUS` varchar(40) NOT NULL DEFAULT 'draft' COMMENT '产品状态：草稿(draft)->上架(on_sale)->下架(not_on_sale)->不可用(disable)',
-`PRODUCT_SALE_TYPE` varchar(40) NOT NULL DEFAULT 'stock' COMMENT '销售类型：按库存销售(stock)、预售(pre_order)、永远可售(always)',
-`PRODUCT_ORDER` int NULL,
+`PRODUCT_STATUS` varchar(40) NOT NULL DEFAULT 'draft' COMMENT '产品状态：不可用(0)->上架(1)->下架(2)->定时上架(3)',
+`PRODUCT_SALE_TYPE` varchar(40) NOT NULL DEFAULT 'stock' COMMENT '销售类型：按库存销售(1)、预售(2)、永远可售(3)',
+`PRODUCT_ORDER` int NOT NULL auto_increment unique key,
 `PRODUCT_CREATER_ID` varchar(64) NULL,
 `PRODUCT_CREATE_TIME` datetime NULL,
 `PRODUCT_UPDATER_ID` varchar(64) NULL,
@@ -65,6 +64,7 @@ PRIMARY KEY (`KEEP_ID`)
 )
 
 COMMENT = '产品SKU';
+
 CREATE TABLE `MU_MEDIA` (
 `MEDIA_ID` varchar(64) NOT NULL,
 `PRODUCT_ID` varchar(64) NOT NULL,
@@ -97,6 +97,7 @@ PRIMARY KEY (`BRAND_ID`)
 CREATE TABLE `MU_SPU_DETAIL` (
 `DETAIL_ID` varchar(64) NOT NULL,
 `DETAIL_CONTENT` longtext NOT NULL,
+`DETAIL_VALID` varchar(1) NOT NULL DEFAULT '1',
 PRIMARY KEY (`DETAIL_ID`) 
 );
 

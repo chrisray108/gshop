@@ -1,6 +1,6 @@
 var express   = require('express');
 var router    = express.Router();
-var query     = require("../base/db-pool");
+var database  = require("../base/db-pool");
 var errorCode = require("../base/error-code");
 
 
@@ -21,7 +21,7 @@ router.post('/loginByEmail', function(req, res, next) {
             email   :   req.sanitize('email').escape(),
             token   :   req.sanitize('password').escape(),
         }
-        query(sqlMap.loginByEmail, [user.email, user.token], function(err, result) {
+        database.query(sqlMap.loginByEmail, [user.email, user.token], function(err, result) {
             if (err)
             {
                 res.status(errorCode.queryFailed).send('Sorry, The operation couldn’t be completed:' + err);                           

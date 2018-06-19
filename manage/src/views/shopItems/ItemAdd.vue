@@ -117,7 +117,7 @@
                   <hr style=" height:2px;border:none;border-top:1px solid #cfd8dc;" />         
                   <br>
                   <span>请在在商店设置里设置分类</span>
-                  <Select v-model="product.selectedCategoryId" style="width:200px; display: block; margin-top: 20px">
+                  <Select v-model="product.categoryId" style="width:200px; display: block; margin-top: 20px">
                       <Option v-for="item in categories" :value="item.cid">
                         {{ item.name }}
                       </Option>
@@ -146,7 +146,7 @@
                   <RadioGroup v-model="product.status">
                     <Radio  label=1><span>上架</span></Radio>
                     <Radio  label=2><span>仓库(下架)</span></Radio>
-                    <Radio  label=3><span>定时上架</span></Radio>
+                    <!-- <Radio  label=3><span>定时上架</span></Radio> -->
                   </RadioGroup>
               </Col>
           </Row>
@@ -158,8 +158,8 @@
                   <br>
                   <hr style=" height:2px;border:none;border-top:1px solid #cfd8dc;" />         
                   <br>
-                  <Form-item prop="detailDesc">
-                          <mavon-editor style=" margin-top: 10px" v-model="product.detailDesc"/>
+                  <Form-item prop="detailContent">
+                          <mavon-editor style=" margin-top: 10px" v-model="product.detailContent"/>
                    </Form-item>
               </Col>
           </Row>
@@ -199,12 +199,12 @@
                      mainPic:"",
                      name:"",
                      desc:"",
-                     detailDesc:"",
+                     detailContent:"",
                      status:"",
                      sellCount:'',
                      keepItems:[new KeepItem()],
                      keepOption:[],
-                     selectedCategoryId:"",
+                     categoryId:"",
                 },
                 categories:[],
                 ruleValidate:{
@@ -245,7 +245,7 @@
               this.$store.dispatch('AddProduct',this.$data.product).then((res) => 
                { 
                   that.$Message.success("添加成功！");
-                  that.$router.back();
+                  //that.$router.back();
                }).catch(error => {
                   that.$Message.error("数据上传失败: " + error.response.status);
                });

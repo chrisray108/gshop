@@ -56,9 +56,12 @@ var transaction = function(sqls,callback)
                 });
             }
         });
-
     });  
-
 }
 
-module.exports = query;
+let database = 
+{
+    query : query,
+    transaction : transaction,
+}
+module.exports = database;

@@ -1,6 +1,6 @@
 var express  = require('express');
 var router   = express.Router();
-var query    = require("../base/db-pool");  
+var database = require("../base/db-pool");  
 const uuidv1 = require('uuid/v1');
 var moment   = require('moment');
 var sanitizer = require('sanitizer');
@@ -42,7 +42,7 @@ var addUser = function(req, res, next){
             pwd     :   req.sanitize('password').escape(),
             timetag :   moment().format("YYYY-MM-DD HH:mm:ss"),
         }
-        query(userSqlMap.insert, [user.userId, user.pwd, user.timetag, user.nick, user.avatar, user.email], function(err, result) {
+        database.query(userSqlMap.insert, [user.userId, user.pwd, user.timetag, user.nick, user.avatar, user.email], function(err, result) {
             if (err) {
                 res.status(400).send('Sorry, The operation couldn’t be completed:' + err);                           
             } else {                
@@ -69,7 +69,7 @@ router.get('/query', function(req, res, next) {
     {
         uid = req.session.loginId;
     }
-    query(userSqlMap.getById, uid, function(err,results,fields){  
+    database.query(userSqlMap.getById, uid, function(err,results,fields){  
        if (err) throw err   
        var user = results[0];
        if(user != undefined)
@@ -86,7 +86,7 @@ router.get('/query', function(req, res, next) {
 
 
 router.get('/queryList', function(req, res, next) {    
-    query(userSqlMap.list, null, function(err,results,fields)
+    database.query(userSqlMap.list, null, function(err,results,fields)
     {
         if (err) throw err 
         resolveUserAvatar(results);           
@@ -106,7 +106,7 @@ router.post('/remove', function(req, res, next) {
     var errors = req.validationErrors()
     if( !errors ) 
     {
-        query(userSqlMap.deleteById, req.body.userId, function(err,results,fields){  
+        database.query(userSqlMap.deleteById, req.body.userId, function(err,results,fields){  
             if (err) throw err
             res.status(200).send(results);     
         });
