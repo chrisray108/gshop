@@ -31,10 +31,10 @@ CREATE TABLE `MU_SPU` (
 `PRODUCT_DETAIL_ID` varchar(64) NULL,
 `PRODUCT_CATEGORY_ID` varchar(64) NULL,
 `PRODUCT_SUBCATEGORY_ID` varchar(64) NULL,
-`PRODUCT_STATUS` varchar(40) NOT NULL DEFAULT 'draft' COMMENT '产品状态：不可用(0)->上架(1)->下架(2)->定时上架(3)',
-`PRODUCT_SALE_TYPE` varchar(40) NOT NULL DEFAULT 'stock' COMMENT '销售类型：按库存销售(1)、预售(2)、永远可售(3)',
+`PRODUCT_STATUS` varchar(40) NOT NULL DEFAULT '1' COMMENT '产品状态：不可用(0)->上架(1)->下架(2)->定时上架(3)',
+`PRODUCT_SALE_TYPE` varchar(40) NOT NULL DEFAULT '3' COMMENT '销售类型：按库存销售(1)、预售(2)、永远可售(3)',
 `PRODUCT_ORDER` int NOT NULL auto_increment unique key,
-`PRODUCT_CREATER_ID` varchar(64) NULL,
+`PRODUCT_CREATOR_ID` varchar(64) NULL,
 `PRODUCT_CREATE_TIME` datetime NULL,
 `PRODUCT_UPDATER_ID` varchar(64) NULL,
 `PRODUCT_UPDATE_TIME` datetime NULL,
@@ -45,20 +45,21 @@ INDEX product_ena_index ( `PRODUCT_ENA` )
 CREATE TABLE `MU_SKU` (
 `KEEP_ID` varchar(64) NOT NULL,
 `PRODUCT_ID` varchar(64) NOT NULL,
-`KEEP_ENA` varchar(64) NOT NULL,
-`KEEP_ENA_TYPE` varchar(40) NULL DEFAULT 'auto' COMMENT 'ENA 生成方式   auto(自动生成)   manual(人工录入)',
+`KEEP_ENA` varchar(64) NULL,
+`KEEP_ENA_TYPE` varchar(40) NULL COMMENT 'ENA 生成方式   人工录入(1)  自动生成(2)',
 `KEEP_SIZE_WIDTH` decimal(14,2) ZEROFILL NULL,
 `KEEP_SIZE_DEPTH` decimal(14,2) ZEROFILL NULL,
 `KEEP_SIZE_HEIGHT` decimal(14,2) ZEROFILL NULL,
 `KEEP_WEIGHT` decimal(20,4) ZEROFILL NULL,
 `KEEP_BUY_PRISE` decimal(14,2) ZEROFILL NULL COMMENT '货品进价',
 `KEEP_MARKET_PRISE` decimal(14,2) ZEROFILL NULL COMMENT '货品市场指导价',
-`KEEP_STATUS` varchar(64) NULL COMMENT '库存状态   上架(on_sale)、下架(not_on_sale)',
+`KEEP_STATUS` varchar(40) NULL DEFAULT '1' COMMENT '库存状态   上架(1)、下架(2)',
 `KEEP_CREATOR_ID` varchar(64) NULL,
 `KEEP_CREATE_TIME` datetime NULL,
 `KEEP_UPDATER_ID` varchar(64) NULL,
 `KEEP_UPDATE_TIME` datetime NULL,
 `KEEP_COUNT` int NULL COMMENT '库存数量',
+`KEEP_UNLIMITED_COUNT` varchar(1) NOT NULL DEFAULT '0' COMMENT '是否无限库存 否(0), 是(1)',
 `KEEP_SEPC_DESC` varchar(64) NOT NULL,
 PRIMARY KEY (`KEEP_ID`) 
 )
@@ -119,11 +120,12 @@ CREATE TABLE `MU_SPU_SUB_CATEGORY` (
 PRIMARY KEY (`CATEGORY_ID`) 
 );
 
+
 CREATE TABLE `MU_PRISE` (
 `PRISE_ID` varchar(64) NOT NULL,
-`PRODUCT_ID` varchar(64) NOT NULL,
-`KEEP_ID` varchar(64) NULL,
+`KEEP_ID` varchar(64) NOT NULL,
 `PRISE_VALUE` decimal(14,2) NOT NULL,
+`PRISE_ORIGIN_VALUE` decimal(14,2) NULL,
 `PRISE_VALID_TIME` datetime NOT NULL COMMENT '生效时间',
 PRIMARY KEY (`PRISE_ID`) 
 );

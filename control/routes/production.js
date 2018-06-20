@@ -11,20 +11,41 @@ var productionSqlMap = {
     add:"insert into MU_SPU_CATEGORY (category_id, category_name, category_create_time, category_order) values (?,?,?,(select case when max(category_order) is null then 1 else max(category_order)+1 end from (select category_order from MU_SPU_CATEGORY)  as total))",
     remove:"update MU_SPU_CATEGORY set category_valid = 0 where category_id = ?",
     addDetail :"insert into MU_SPU_DETAIL (detail_id, detailContent) values (?,?)",
-    addProduct:"insert into MU_SPU (product_id, product_name, product_desc, )",
+    addProduct:"insert into MU_SPU (product_id, product_name, product_desc, \
+                product_detail_id, product_category_id, product_status, product_sale_type,\
+                product_creator_id, product_create_time) values (?,?,?,?,?,?,?,?,?)",
+    addKeep:"insert into MU_SKU(keep_id, product_id, keep_creator_id, keep_create_time, \
+             keep_count, keep_unlimited_count, keep_spec_desc) values (?,?,?,?,?,?,?)",
+    addPrise:"insert into MU_PRISE (prise_id, keep_id, \
+              prise_value, prise_oirgin_value, prise_valid_time) \
+              values (?,?,?,?,?)",
+
 };
 
 
 router.post('/addProduct', function(req, res, next) {
     
-    let sql1 = addDetail(req);
-
-    var productId = uuidv1()
-
-    //database.transaction();
+    let detail  = insertDetail(req);
+    let product = insertProduct(detail.detailId, req)
+    let keeps   = insertKeep(product.productId,req)
+    
+    var sqls = [];
+    sqls.push(detail);
+    sqls.push(product);
+    for (index in keeps) 
+    {
+        sqls.push(keeps[index]);
+    }
+    database.transaction(sqls,function(err){
+        if (err) { 
+            res.status(400).send('Sorry, The operation couldn’t be completed:' + err);                           
+        } else {                                
+            res.status(200).send();
+        }
+    });
 });
 
-function addDetail(req)
+function insertDetail(req)
 {
     var detail = 
     {
@@ -33,14 +54,14 @@ function addDetail(req)
     }
     let sql= 
     {
-        detailId  : detailId
+        detailId  : detail.detailId,
         exec      : productionSqlMap.addDetail,
         options   : [detail.detailId, detail.content]
     }
     return sql;
 }
 
-function addProduct(detailId, req)
+function insertProduct(detailId, req)
 {
     var product = 
     {
@@ -54,13 +75,80 @@ function addProduct(detailId, req)
         creatorId  :  req.session.loginId,
         createTime :  moment().format("YYYY-MM-DD HH:mm:ss"),
     }
-    let sql= 
+    let sql = 
     {
-        detailId  : detailId
-        exec      : productionSqlMap.addDetail,
-        options   : [detail.detailId, detail.content]
+        productId : product.productId,
+        exec      : productionSqlMap.addProduct,
+        options   : [product.productId, 
+                     product.name, 
+                     productId.desc, 
+                     product.detailId,
+                     product.categoryId, 
+                     product.status,
+                     product.sellType, 
+                     product.creatorId, 
+                     product.createTime],
     }
     return sql;
+}
+
+function insertKeeps (productId, req)
+{
+    var sqls = [],
+    var keeps = req.keepItems
+    for(index in keeps)
+    {
+        var item = keeps[index]
+        var keep = 
+        {
+            keepId     : uuidv1(),
+            productId  : productId,
+            creatorId  : req.session.loginId,
+            createTime : moment().format("YYYY-MM-DD HH:mm:ss"),
+            keepCount  : sanitizer.escape(item.keepCount),
+            unlimitedCount : item.unlimitedCount? '1' : '0',
+            sepcDesc   : sanitizer.escape(item.specDesc),                        
+        }
+        let sql = 
+        {
+            keepId  : keep.keepId,
+            exec    : productionSqlMap.addKeep,
+            options : [keep.keepId, 
+                       keep.productId, 
+                       keep.creatorId, 
+                       keep.createTime, 
+                       keep.keepCount,
+                       keep.unlimitedCount,
+                       keep.sepcDesc],
+        }
+        sqls.push(sql)
+        var priseSql = insertPrise(keep.keepId, item)
+        sqls.push(priseSql)
+    }
+    return sqls
+}
+
+function insertPrise(keepId, item)
+{
+    var prise = 
+        {
+            priseId : uuidv1(),
+            keepId  : keepId,
+            prise   : sanitizer.escape(item.prise),
+            originPrise : sanitizer.escape(item.originPrise),
+            validTime :  moment().format("YYYY-MM-DD HH:mm:ss"),    
+        }     
+    let sql = 
+    {
+        priseId : prise.priseId,
+        exec    : productionSqlMap.addPrise,
+        options : [prise.priseId, 
+                   prise.keepId, 
+                   prise.prise, 
+                   prise.originPrise, 
+                   prise.validTime],
+    }
+    return sql
 }
 
 
