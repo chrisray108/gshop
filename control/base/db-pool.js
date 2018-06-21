@@ -13,8 +13,12 @@ var query = function(sql,options,callback)
             callback(err,null,null);  
         }
         else
-        {  
+        {              
             conn.query(sql,options,function(err,results,fields){  
+                if (err) 
+                {
+                   console.log(sql,options)
+                }                
                 conn.release();  
                 callback(err, results, fields);  
             });  
@@ -22,39 +26,49 @@ var query = function(sql,options,callback)
     });  
 };
 
+const querySync = function(conn,sql,options)
+{
+    return new Promise(function (resolve, reject) {        
+        conn.query(sql, options, function(err,results,fields){
+             if (err) reject(err)
+             else resolve()             
+        });
+    });
+}
 
 var transaction = function(sqls,callback) 
 {
     pool.getConnection(function(err,conn)
     {   
-        connection.beginTransaction(function(err) {
-           if (err) callback(err);
-           for(index in sqls)
-           {
-                var sql = sqls[index]
-                conn.query(sql.exec, sql.options, function(err,results,fields){  
-                    if (error) {
-                      return conn.rollback(function() {
-                         callback(err);
-                      });
-                    }
-                    if (index == sqls.length() - 1) 
-                    {
-                        conn.commit(function(err) {
-                          if (err) 
-                          {
-                             return conn.rollback(function() {
-                                callback(err);
-                             });
-                          }
-                          else
-                          {
-                             callback(null);
-                          }
-                        });
-                    }                      
-                });
-            }
+        conn.beginTransaction(function(err) {
+           if (err) return callback(err);
+           sqls.reduce(function(promise, sql) {
+               return promise.then(function(){
+                  return querySync(conn, sql.exec, sql.options);
+               });
+           },Promise.resolve())
+           .then(function(){
+              console.log("commit !")
+              conn.commit(function(err) {
+                 if (err) 
+                 {
+                   return conn.rollback(function() {
+                      console.log("error2! rollback: " + err)
+                      callback(err);
+                   });
+                 }
+                 else
+                 {
+                   callback(null);
+                 } 
+              });
+           })
+           .catch(function(err) {
+              conn.rollback(function() {
+                console.log("error1! rollback: "+ err)
+                callback(err);
+              });             
+           });
         });
     });  
 }

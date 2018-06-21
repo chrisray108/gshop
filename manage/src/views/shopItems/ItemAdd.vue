@@ -1,8 +1,5 @@
 <template>
   <div class="animated fadeIn">    
-      <Affix :offset-top="100" style="width: 300px; margin-left: 600px;">
-           <span style="width: word-break:normal; width:auto; display:block; white-space:pre-wrap;word-wrap : break-word ;overflow: hidden ; background-color: #2b85e4; color: #ffffff">{{JSON.stringify([product,categories])}}</span>
-     </Affix>
     <Form ref="formValidate" :model="product" :rules="ruleValidate" :label-width=0 >
           <Row>
                 <Col :md="20"  :sm="24">

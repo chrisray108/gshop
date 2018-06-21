@@ -10,14 +10,14 @@ var productionSqlMap = {
     query:"select category_id as cid, category_name as name from MU_SPU_CATEGORY where category_valid=1 order by category_order",
     add:"insert into MU_SPU_CATEGORY (category_id, category_name, category_create_time, category_order) values (?,?,?,(select case when max(category_order) is null then 1 else max(category_order)+1 end from (select category_order from MU_SPU_CATEGORY)  as total))",
     remove:"update MU_SPU_CATEGORY set category_valid = 0 where category_id = ?",
-    addDetail :"insert into MU_SPU_DETAIL (detail_id, detailContent) values (?,?)",
+    addDetail :"insert into MU_SPU_DETAIL (detail_id, detail_content) values (?,?)",
     addProduct:"insert into MU_SPU (product_id, product_name, product_desc, \
                 product_detail_id, product_category_id, product_status, product_sale_type,\
                 product_creator_id, product_create_time) values (?,?,?,?,?,?,?,?,?)",
     addKeep:"insert into MU_SKU(keep_id, product_id, keep_creator_id, keep_create_time, \
              keep_count, keep_unlimited_count, keep_spec_desc) values (?,?,?,?,?,?,?)",
     addPrise:"insert into MU_PRISE (prise_id, keep_id, \
-              prise_value, prise_oirgin_value, prise_valid_time) \
+              prise_value, prise_origin_value, prise_valid_time) \
               values (?,?,?,?,?)",
 
 };
@@ -27,8 +27,8 @@ router.post('/addProduct', function(req, res, next) {
     
     let detail  = insertDetail(req);
     let product = insertProduct(detail.detailId, req)
-    let keeps   = insertKeep(product.productId,req)
-    
+    let keeps   = insertKeeps(product.productId,req)
+
     var sqls = [];
     sqls.push(detail);
     sqls.push(product);
@@ -38,6 +38,7 @@ router.post('/addProduct', function(req, res, next) {
     }
     database.transaction(sqls,function(err){
         if (err) { 
+            console.log("add product error: " + err)
             res.status(400).send('Sorry, The operation couldn’t be completed:' + err);                           
         } else {                                
             res.status(200).send();
@@ -81,7 +82,7 @@ function insertProduct(detailId, req)
         exec      : productionSqlMap.addProduct,
         options   : [product.productId, 
                      product.name, 
-                     productId.desc, 
+                     product.desc, 
                      product.detailId,
                      product.categoryId, 
                      product.status,
@@ -94,8 +95,8 @@ function insertProduct(detailId, req)
 
 function insertKeeps (productId, req)
 {
-    var sqls = [],
-    var keeps = req.keepItems
+    var sqls = []
+    var keeps = req.body.keepItems
     for(index in keeps)
     {
         var item = keeps[index]
