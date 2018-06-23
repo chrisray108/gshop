@@ -8,3 +8,11 @@ export function addProduct(product) {
     data
   });
 }
+
+
+export function fetchProducts(product) {
+  return fetch({
+    url: '/production/productList',
+    method: 'post',
+  });
+}

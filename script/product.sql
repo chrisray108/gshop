@@ -34,6 +34,7 @@ CREATE TABLE `MU_SPU` (
 `PRODUCT_STATUS` varchar(40) NOT NULL DEFAULT '1' COMMENT '产品状态：不可用(0)->上架(1)->下架(2)->定时上架(3)',
 `PRODUCT_SALE_TYPE` varchar(40) NOT NULL DEFAULT '3' COMMENT '销售类型：按库存销售(1)、预售(2)、永远可售(3)',
 `PRODUCT_ORDER` int NOT NULL auto_increment unique key,
+`PRODUCT_SELL_COUNT` int NULL COMMENT '销售数量',
 `PRODUCT_CREATOR_ID` varchar(64) NULL,
 `PRODUCT_CREATE_TIME` datetime NULL,
 `PRODUCT_UPDATER_ID` varchar(64) NULL,

@@ -13,26 +13,25 @@ var productionSqlMap = {
     addDetail :"insert into MU_SPU_DETAIL (detail_id, detail_content) values (?,?)",
     addProduct:"insert into MU_SPU (product_id, product_name, product_desc, \
                 product_detail_id, product_category_id, product_status, product_sale_type,\
-                product_creator_id, product_create_time) values (?,?,?,?,?,?,?,?,?)",
+                product_creator_id, product_create_time, product_sell_count) values (?,?,?,?,?,?,?,?,?,?)",
     addKeep:"insert into MU_SKU(keep_id, product_id, keep_creator_id, keep_create_time, \
              keep_count, keep_unlimited_count, keep_spec_desc) values (?,?,?,?,?,?,?)",
     addPrise:"insert into MU_PRISE (prise_id, product_id,keep_id, \
               prise_value, prise_origin_value, prise_valid_time) \
               values (?,?,?,?,?,?)",
-    queryProduct:"select  spu.product_id as pid, \
-                          spu.product_name as name, \
-                          spu.product_desc as description, \
-                          spu.product_detail_id as detailId, \ 
-                          spu.product_category_id as categoryId, \
-                          min(prise.prise_value) as priseMinValue, \
-                          max(prise.prise_value) as priseMaxValue, \      
-                          min(prise.prise_origin_value) as priseOriginMinValue, \
-                          max(prise.prise_origin_value) as priseOriginMaxValue  \
-                  from mu_spu as spu, mu_prise as prise where spu.product_id = prise.product_id group by spu.product_id",
+    queryProduct:"select  spu.product_id as pid, spu.product_name as name, \
+                  spu.product_desc as description, \
+                  spu.product_sell_count as sellCount, \
+                  spu.product_category_id as categoryId, min(prise.prise_value) as priseMinValue, \
+                  max(prise.prise_value) as priseMaxValue, \
+                  min(prise.prise_origin_value) as priseOriginMinValue, \
+                  max(prise.prise_origin_value) as priseOriginMaxValue \
+                  from mu_spu as spu, mu_prise as prise \
+                  where spu.product_id = prise.product_id group by spu.product_id",
 
 };
 
-router.post('/queryProduct', function(req, res, next) {
+router.post('/productList', function(req, res, next) {
     database.query(productionSqlMap.queryProduct, null, function(err,results,fields) {
         if (err) {
             res.status(400).send('Sorry, The operation couldn’t be completed:' + err);                           
@@ -97,6 +96,7 @@ function insertProduct(detailId, req)
         sellType   :  '3',
         creatorId  :  req.session.loginId,
         createTime :  moment().format("YYYY-MM-DD HH:mm:ss"),
+        cellCount  :  req.sanitize('sellCount').escape(),
     }
     let sql = 
     {
@@ -110,7 +110,8 @@ function insertProduct(detailId, req)
                      product.status,
                      product.sellType, 
                      product.creatorId, 
-                     product.createTime],
+                     product.createTime,
+                     product.cellCount],
     }
     return sql;
 }
