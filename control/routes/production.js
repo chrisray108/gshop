@@ -22,21 +22,23 @@ var productionSqlMap = {
     queryProduct:"select  spu.product_id as pid, spu.product_name as name, \
                   spu.product_desc as description, \
                   spu.product_sell_count as sellCount, \
-                  spu.product_category_id as categoryId, min(prise.prise_value) as priseMinValue, \
+                  category.category_name as categoryName,\
+                  min(prise.prise_value) as priseMinValue, \
                   max(prise.prise_value) as priseMaxValue, \
                   min(prise.prise_origin_value) as priseOriginMinValue, \
                   max(prise.prise_origin_value) as priseOriginMaxValue \
-                  from mu_spu as spu, mu_prise as prise \
-                  where spu.product_id = prise.product_id group by spu.product_id",
+                  from mu_spu as spu, mu_prise as prise, mu_spu_category as category \
+                  where spu.product_id = prise.product_id and spu.product_category_id = category.category_id \
+                  group by spu.product_id",
 
 };
 
 router.post('/productList', function(req, res, next) {
     database.query(productionSqlMap.queryProduct, null, function(err,results,fields) {
         if (err) {
+            console.log(err)
             res.status(400).send('Sorry, The operation couldn’t be completed:' + err);                           
-        } else {     
-            console.log(JSON.stringify(results))                        
+        } else {                                      
             res.status(200).send(results);
         }
     })

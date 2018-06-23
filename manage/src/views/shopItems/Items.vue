@@ -86,6 +86,20 @@
                         }
                     },
                     {
+                        title: '分类',
+                        key: '',                        
+                        render: (h, params) => {                             
+                          return h('div', [
+                            h('span', {
+                                style: {
+                                    fontSize : '15px',
+                                }
+                              }, 
+                              params.row.categoryName),
+                           ]);                            
+                        }
+                    },
+                    {
                         title: '操作',
                         key: 'pid',
                         width: 150,
