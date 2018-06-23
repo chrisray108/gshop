@@ -16,11 +16,33 @@ var productionSqlMap = {
                 product_creator_id, product_create_time) values (?,?,?,?,?,?,?,?,?)",
     addKeep:"insert into MU_SKU(keep_id, product_id, keep_creator_id, keep_create_time, \
              keep_count, keep_unlimited_count, keep_spec_desc) values (?,?,?,?,?,?,?)",
-    addPrise:"insert into MU_PRISE (prise_id, keep_id, \
+    addPrise:"insert into MU_PRISE (prise_id, product_id,keep_id, \
               prise_value, prise_origin_value, prise_valid_time) \
-              values (?,?,?,?,?)",
+              values (?,?,?,?,?,?)",
+    queryProduct:"select  spu.product_id as pid, \
+                          spu.product_name as name, \
+                          spu.product_desc as description, \
+                          spu.product_detail_id as detailId, \ 
+                          spu.product_category_id as categoryId, \
+                          min(prise.prise_value) as priseMinValue, \
+                          max(prise.prise_value) as priseMaxValue, \      
+                          min(prise.prise_origin_value) as priseOriginMinValue, \
+                          max(prise.prise_origin_value) as priseOriginMaxValue  \
+                  from mu_spu as spu, mu_prise as prise where spu.product_id = prise.product_id group by spu.product_id",
 
 };
+
+router.post('/queryProduct', function(req, res, next) {
+    database.query(productionSqlMap.queryProduct, null, function(err,results,fields) {
+        if (err) {
+            res.status(400).send('Sorry, The operation couldn’t be completed:' + err);                           
+        } else {     
+            console.log(JSON.stringify(results))                        
+            res.status(200).send(results);
+        }
+    })
+})
+
 
 
 router.post('/addProduct', function(req, res, next) {
@@ -123,27 +145,29 @@ function insertKeeps (productId, req)
                        keep.sepcDesc],
         }
         sqls.push(sql)
-        var priseSql = insertPrise(keep.keepId, item)
+        var priseSql = insertPrise(productId, keep.keepId, item)
         sqls.push(priseSql)
     }
     return sqls
 }
 
-function insertPrise(keepId, item)
+function insertPrise(productId, keepId, item)
 {
     var prise = 
         {
-            priseId : uuidv1(),
-            keepId  : keepId,
-            prise   : sanitizer.escape(item.prise),
+            priseId   : uuidv1(),
+            productId : productId,
+            keepId    : keepId,
+            prise     : sanitizer.escape(item.prise),
             originPrise : sanitizer.escape(item.originPrise),
-            validTime :  moment().format("YYYY-MM-DD HH:mm:ss"),    
+            validTime   :  moment().format("YYYY-MM-DD HH:mm:ss"),    
         }     
     let sql = 
     {
         priseId : prise.priseId,
         exec    : productionSqlMap.addPrise,
         options : [prise.priseId, 
+                   prise.productId,
                    prise.keepId, 
                    prise.prise, 
                    prise.originPrise, 

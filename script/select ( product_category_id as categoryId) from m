@@ -1,0 +1,43 @@
+select  spu.product_id as pid, 
+        spu.product_name as name, 
+        spu.product_desc as description, 
+        spu.product_detail_id as detailId, 
+        spu.product_category_id as categoryId,
+        sku.keep_id as keepId,
+        sku.keep_count as keepCount
+from mu_spu as spu
+inner join
+(
+select sku.product_id,
+       sku.keep_id, 
+       sku.keep_creator_id, 
+       sku.keep_create_time, 
+       sku.keep_count 
+from mu_sku as sku
+where sku.keep_status !='0' 
+) as sku
+on spu.product_status != '0' and spu.product_id = sku.product_id;
+
+
+select  spu.product_id as pid, 
+        spu.product_name as name, 
+        spu.product_desc as description, 
+        spu.product_detail_id as detailId, 
+        spu.product_category_id as categoryId,
+        min(prise.prise_value) as priseValue,
+        min(prise.prise_origin_value) as priseOriginValue 
+from mu_spu as spu, mu_prise as prise  
+where spu.product_status != '0' and spu.product_id = prise.product_id
+
+
+
+select  spu.product_id as pid, 
+        spu.product_name as name, 
+        spu.product_desc as description, 
+        spu.product_detail_id as detailId, 
+        spu.product_category_id as categoryId,
+        min(prise.prise_value) as priseMinValue,
+        max(prise.prise_value) as priseMaxValue,        
+        min(prise.prise_origin_value) as priseOriginMinValue,
+        max(prise.prise_origin_value) as priseOriginMaxValue 
+        from mu_spu as spu, mu_prise as prise where spu.product_id = prise.product_id group by spu.product_id
