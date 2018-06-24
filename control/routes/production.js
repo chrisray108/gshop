@@ -10,27 +10,49 @@ var productionSqlMap = {
     query:"select category_id as cid, category_name as name from MU_SPU_CATEGORY where category_valid=1 order by category_order",
     add:"insert into MU_SPU_CATEGORY (category_id, category_name, category_create_time, category_order) values (?,?,?,(select case when max(category_order) is null then 1 else max(category_order)+1 end from (select category_order from MU_SPU_CATEGORY)  as total))",
     remove:"update MU_SPU_CATEGORY set category_valid = 0 where category_id = ?",
-    addDetail :"insert into MU_SPU_DETAIL (detail_id, detail_content) values (?,?)",
+    addDetail :"insert into MU_SPU_DETAIL (detail_id, detail_content, detail_create_time) values (?,?,?)",
     addProduct:"insert into MU_SPU (product_id, product_name, product_desc, \
                 product_detail_id, product_category_id, product_status, product_sale_type,\
-                product_creator_id, product_create_time, product_sell_count) values (?,?,?,?,?,?,?,?,?,?)",
+                product_creator_id, product_create_time, product_sell_count, product_main_pic) values (?,?,?,?,?,?,?,?,?,?,?)",
     addKeep:"insert into MU_SKU(keep_id, product_id, keep_creator_id, keep_create_time, \
              keep_count, keep_unlimited_count, keep_spec_desc) values (?,?,?,?,?,?,?)",
     addPrise:"insert into MU_PRISE (prise_id, product_id,keep_id, \
               prise_value, prise_origin_value, prise_valid_time) \
               values (?,?,?,?,?,?)",
-    queryProduct:"select  spu.product_id as pid, spu.product_name as name, \
+    queryProduct: "select  spu.product_id as pid, \
+                  spu.product_name as name, \
+                  spu.product_main_pic as mainPic, \
                   spu.product_desc as description, \
                   spu.product_sell_count as sellCount, \
+                  spu.product_category_id as categoryId,\
+                  spu.product_status as status,\
+                  spu.product_detail_id as detaidId,\
                   category.category_name as categoryName,\
                   min(prise.prise_value) as priseMinValue, \
                   max(prise.prise_value) as priseMaxValue, \
                   min(prise.prise_origin_value) as priseOriginMinValue, \
                   max(prise.prise_origin_value) as priseOriginMaxValue \
                   from mu_spu as spu, mu_prise as prise, mu_spu_category as category \
-                  where spu.product_id = prise.product_id and spu.product_category_id = category.category_id \
+                  where spu.product_id = prise.product_id \
+                  and spu.product_category_id = category.category_id \
                   group by spu.product_id",
-
+    queryKeeps: "select sku.keep_id as keepId, \
+                        sku.product_id as productId, \
+                        sku.keep_creator_id as creatorId, \
+                        sku.keep_create_time as createTime, \
+                        sku.keep_count as keepCount, \
+                        sku.keep_unlimited_count as unlimitedCount, \
+                        sku.keep_spec_desc as specDesc, \
+                        prise.prise_value as prise,\
+                        prise.prise_origin_value as originPrise \
+                        from mu_sku sku, mu_prise prise \
+                 where sku.product_id = ? \
+                 and sku.keep_status != '0' \
+                 and prise.keep_id = sku.keep_id ",
+    queryProductDetail:"select detail_content as content \
+                        from  MU_SPU_DETAIL where detail_id = ? \
+                        and detail_valid = 1 \
+                        order by detail_create_time desc limit 1",  
 };
 
 router.post('/productList', function(req, res, next) {
@@ -39,10 +61,68 @@ router.post('/productList', function(req, res, next) {
             console.log(err)
             res.status(400).send('Sorry, The operation couldn’t be completed:' + err);                           
         } else {                                      
-            res.status(200).send(results);
+            let products = results
+            resolveProductUrl(products)
+            res.status(200).send(products);
         }
     })
-})
+});
+
+
+router.post('/keepList', function(req, res, next) {
+    req.assert('pid', 'product id is required').notEmpty()             
+    var errors = req.validationErrors()    
+    if( !errors ) 
+    {
+        let pid  =  req.sanitize('pid').escape();
+        database.query(productionSqlMap.queryKeeps, pid, function(err, results) 
+        {
+            if (err) { 
+                res.status(400).send('Sorry, The operation couldn’t be completed:' + err);                           
+            } else {                                
+                res.status(200).send(results);
+            }
+        })
+    }
+    else
+    {
+        var error_msg = '';
+        errors.forEach(function(error) {
+            error_msg += error.msg + '<br>'
+        });
+        res.status(414).send('Sorry, The param is not passed: ' + error_msg);            
+    }
+});
+
+
+router.post('/fetchDetail', function(req, res, next) {
+    req.assert('detailId', 'detail id is required').notEmpty()             
+    var errors = req.validationErrors()    
+    if( !errors ) 
+    {
+        let detailId  =  req.sanitize('detailId').escape();
+        database.query(productionSqlMap.queryProductDetail, detailId, function(err, results) 
+        {
+            if (err) 
+            { 
+                console.log(err)
+                res.status(400).send('Sorry, The operation couldn’t be completed:' + err);                           
+            }
+            else 
+            {
+                res.status(200).send(results.length? results[0] : "");
+            }
+        })
+    }
+    else
+    {
+        var error_msg = '';
+        errors.forEach(function(error) {
+            error_msg += error.msg + '<br>'
+        });
+        res.status(414).send('Sorry, The param is not passed: ' + error_msg);            
+    }
+});
 
 
 
@@ -73,14 +153,15 @@ function insertDetail(req)
 {
     var detail = 
     {
-        detailId  :  uuidv1(),
-        content   :  req.sanitize('detailContent').escape(),
+        detailId   :  uuidv1(),
+        content    :  req.sanitize('detailContent').escape(),
+        createTime :  moment().format("YYYY-MM-DD HH:mm:ss"),
     }
     let sql= 
     {
         detailId  : detail.detailId,
         exec      : productionSqlMap.addDetail,
-        options   : [detail.detailId, detail.content]
+        options   : [detail.detailId, detail.content, detail.createTime]
     }
     return sql;
 }
@@ -91,7 +172,7 @@ function insertProduct(detailId, req)
     {
         productId  :  uuidv1(),
         name       :  req.sanitize('name').escape(),
-        desc       :  req.sanitize('desc').escape(),
+        desc       :  req.sanitize('description').escape(),
         detailId   :  detailId,
         categoryId :  req.sanitize('categoryId').escape(),
         status     :  req.sanitize('status').escape(),
@@ -99,6 +180,7 @@ function insertProduct(detailId, req)
         creatorId  :  req.session.loginId,
         createTime :  moment().format("YYYY-MM-DD HH:mm:ss"),
         cellCount  :  req.sanitize('sellCount').escape(),
+        mainPic    :  req.sanitize('mainPic').escape(), 
     }
     let sql = 
     {
@@ -113,7 +195,8 @@ function insertProduct(detailId, req)
                      product.sellType, 
                      product.creatorId, 
                      product.createTime,
-                     product.cellCount],
+                     product.cellCount,
+                     product.mainPic],
     }
     return sql;
 }
@@ -251,6 +334,15 @@ router.post('/removeCategory', function(req, res, next) {
 });
 
 
+function resolveProductUrl(products)
+{
+    if (products != undefined)
+    {
+        products.forEach(function(product){
+           product.mainPic = sanitizer.unescapeEntities(product.mainPic);
+        });
+    }    
+}
 
 
 

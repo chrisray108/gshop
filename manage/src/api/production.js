@@ -10,9 +10,31 @@ export function addProduct(product) {
 }
 
 
-export function fetchProducts(product) {
+export function fetchProducts() {
   return fetch({
     url: '/production/productList',
     method: 'post',
+  });
+}
+
+export function fetchKeeps(pid) {
+  const data = {
+     pid : pid
+  }
+  return fetch({
+    url: '/production/keepList',
+    method: 'post',
+    data
+  });
+}
+
+export function fetchProductDetail(detailId) {
+  const data = {
+     detailId : detailId
+  }
+  return fetch({
+    url: '/production/fetchDetail',
+    method: 'post',
+    data
   });
 }

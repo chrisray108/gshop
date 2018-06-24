@@ -102,17 +102,18 @@
                     {
                         title: '操作',
                         key: 'pid',
-                        width: 150,
+                        width: 130,
                         align: 'center',
                         render: (h, params) => {
                             return h('div', [                               
-                                h('Button', {
+                                 h('Button', {
                                     props: {
-                                        type: 'text',                                        
+                                        type: 'text',
+                                        size: 'small',                                        
                                     },
                                     on: {
                                         click: () => {
-                                            this.editProduct(params.row.pid)
+                                            this.onConfig(params.row.pid)
                                         }
                                     }
                                   },[
@@ -122,10 +123,29 @@
                                           size: '20',
                                         },
                                      }),
-                                  ])
+                                  ]),
+                                  h('Button', {
+                                    props: {
+                                        type: 'text',
+                                        size: 'small',                                        
+                                    },
+                                    on: {
+                                        click: () => {
+                                            this.editProduct(params.row)
+                                        }
+                                    }
+                                  },[
+                                     h('Icon',{
+                                        props: {
+                                          type: 'ios-arrow-right',
+                                          size: '20',
+                                        },
+                                      }),
+                                    ])                                 
                             ]);
                         }
-                    }               
+                    },
+
                 ],
                 data1: [
                     
@@ -142,12 +162,16 @@
         methods:{   
            addSPU()
            {
-              this.$router.push({path: '/shopitemadd'});
+              this.$router.push({path: '/shopitemedit'});
            },
-           editProduct(pid)
+           editProduct(product)
            {
-              alert(pid)
-           },         
+              this.$router.push({path: '/shopitemedit', query: { product: product} });
+           },      
+           onConfig(pid)
+           {
+
+           },   
         }
       }
 

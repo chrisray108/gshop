@@ -34,9 +34,9 @@
                     </Row>
                     <Row>
                          <Col>
-                             <Form-item prop="desc">
+                             <Form-item prop="description">
                               <div><strong>描述</strong></div>
-                                    <Input v-model="product.desc" type="textarea" :autosize="{minRows: 8,maxRows: 12}" placeholder="请输入商品描述">                                    
+                                    <Input v-model="product.description" type="textarea" :autosize="{minRows: 8,maxRows: 12}" placeholder="请输入商品描述">                                    
                                     </Input>
                              </Form-item>
                          </Col>
@@ -78,12 +78,12 @@
                     <Col :md="{ span: 4, offset: 3 }" :sm="{ span: 12, offset: 0 }"  >
                           <div><strong>库存</strong></div>
                           <div>
-                              <Input v-if="keepItem.unlimitedCount" disabled="true" value="∞">
-                                  <Checkbox slot="append" v-model="keepItem.unlimitedCount">不限库存</Checkbox>
+                              <Input v-if="keepItem.unlimitedCount == '1'" disabled="true" value="∞">
+                                  <Checkbox slot="append" v-model="keepItem.unlimitedCount" true-value="1" false-value="0">不限库存</Checkbox>
                               </Input>
 
                               <Input v-else v-model="keepItem.keepCount">
-                                  <Checkbox slot="append" v-model="keepItem.unlimitedCount">不限库存</Checkbox>
+                                  <Checkbox slot="append" v-model="keepItem.unlimitedCount" true-value="1" false-value="0">不限库存</Checkbox>
                               </Input>
                               
                           </div>
@@ -195,7 +195,7 @@
                 product:{
                      mainPic:"",
                      name:"",
-                     desc:"",
+                     description:"",
                      detailContent:"",
                      status:"",
                      sellCount:'',
@@ -219,15 +219,33 @@
         beforeCreate:function(){
            let that = this;
            this.$Spin.show();
+           //alert(this.$route.query.pid)
+           let product = this.$route.query.product
+           var promises = []
+           var fetchCategories = this.$store.dispatch('FetchCategories');        
+           promises.push(fetchCategories)
 
-           var fetchCategories = this.$store.dispatch('FetchCategories');
-
-           Promise.all([fetchCategories]).then(function (results) {               
+           let isEdit = (product != undefined)
+           if (isEdit) 
+           {
+              let fetchKeeps = this.$store.dispatch('FetchKeeps', product.pid);
+              promises.push(fetchKeeps)
+              let fetchProductDetail = this.$store.dispatch('FetchProductDetail', product.detaidId);
+              promises.push(fetchProductDetail)
+           }
+           Promise.all(promises).then(function (results) {               
                 that.$data.categories = results[0]
+                if (isEdit) 
+                {
+                  that.$data.product = product
+                  that.$data.product.keepItems = results[1]
+                  that.$data.product.detailContent = results[2].content
+                }                
                 that.$Spin.hide();
            }).catch(error => {
                  that.$Spin.hide();
                  that.$Message.error("数据请求失败: " + error.response.status);
+                 that.$router.back();
             });
         },
 

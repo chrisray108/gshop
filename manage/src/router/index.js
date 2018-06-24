@@ -46,7 +46,7 @@ export const asyncRouterMap = [
     hidden:false,
     children: [
      {  path: '/shopitems', name:'商品', icon:'bag', component: _import('shopItems/Items')},
-     {  path: '/shopitemadd', name:'商品添加', icon:'', hidden:true, component: _import('shopItems/ItemAdd')},          
+     {  path: '/shopitemedit', name:'商品添加', icon:'', hidden:true, component: _import('shopItems/ItemEdit')},          
      {  path: '/shopsettings', name:'商店设置', icon:'ios-analytics',
         component: {render (c) { return c('router-view') }},
         children: 

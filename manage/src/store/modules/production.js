@@ -1,5 +1,5 @@
 import { getCategories, addCategory, removeCategory } from 'api/category';
-import { addProduct, fetchProducts } from 'api/production';
+import { addProduct, fetchProducts, fetchKeeps, fetchProductDetail } from 'api/production';
 
 const production = {
 	state:{},
@@ -20,6 +20,28 @@ const production = {
 		{
 			return new Promise((resolve, reject) => {
 	          fetchProducts().then(response => {
+	            resolve(response.data);
+	          }).catch(error => {
+	            reject(error);
+	          });
+	        });
+		},
+
+		FetchProductDetail({ commit }, detailId)
+		{
+	        return new Promise((resolve, reject) => {
+	          fetchProductDetail(detailId).then(response => {
+	            resolve(response.data);
+	          }).catch(error => {
+	            reject(error);
+	          });
+	        });
+		},
+
+		FetchKeeps({ commit }, pid)
+		{
+			return new Promise((resolve, reject) => {
+	          fetchKeeps(pid).then(response => {
 	            resolve(response.data);
 	          }).catch(error => {
 	            reject(error);
