@@ -11,31 +11,44 @@ var productionSqlMap = {
     add:"insert into MU_SPU_CATEGORY (category_id, category_name, category_create_time, category_order) values (?,?,?,(select case when max(category_order) is null then 1 else max(category_order)+1 end from (select category_order from MU_SPU_CATEGORY)  as total))",
     remove:"update MU_SPU_CATEGORY set category_valid = 0 where category_id = ?",
     addDetail :"insert into MU_SPU_DETAIL (detail_id, detail_content, detail_create_time) values (?,?,?)",
-    addProduct:"insert into MU_SPU (product_id, product_name, product_desc, \
+    addProduct:"insert or replace into MU_SPU (product_id, product_name, product_desc, \
                 product_detail_id, product_category_id, product_status, product_sale_type,\
                 product_creator_id, product_create_time, product_sell_count, product_main_pic) values (?,?,?,?,?,?,?,?,?,?,?)",
-    addKeep:"insert into MU_SKU(keep_id, product_id, keep_creator_id, keep_create_time, \
+    addKeep:"insert or replace into MU_SKU(keep_id, product_id, keep_creator_id, keep_create_time, \
              keep_count, keep_unlimited_count, keep_spec_desc) values (?,?,?,?,?,?,?)",
     addPrise:"insert into MU_PRISE (prise_id, product_id,keep_id, \
               prise_value, prise_origin_value, prise_valid_time) \
               values (?,?,?,?,?,?)",
-    queryProduct: "select  spu.product_id as pid, \
-                  spu.product_name as name, \
-                  spu.product_main_pic as mainPic, \
-                  spu.product_desc as description, \
-                  spu.product_sell_count as sellCount, \
-                  spu.product_category_id as categoryId,\
-                  spu.product_status as status,\
-                  spu.product_detail_id as detaidId,\
-                  category.category_name as categoryName,\
-                  min(prise.prise_value) as priseMinValue, \
-                  max(prise.prise_value) as priseMaxValue, \
-                  min(prise.prise_origin_value) as priseOriginMinValue, \
-                  max(prise.prise_origin_value) as priseOriginMaxValue \
-                  from mu_spu as spu, mu_prise as prise, mu_spu_category as category \
-                  where spu.product_id = prise.product_id \
-                  and spu.product_category_id = category.category_id \
-                  group by spu.product_id",
+    queryProduct: "select \
+                        spu.product_id as pid,\
+                        spu.product_name as name,\
+                        spu.product_main_pic as mainPic,\
+                        spu.product_desc as description,\
+                        spu.product_sell_count as sellCount,\
+                        spu.product_category_id as categoryId,\
+                        spu.product_status as status,\
+                        spu.product_detail_id as detaidId,\
+                        category.category_name as categoryName,\
+                        min(prise.prise_value) as priseMinValue,\
+                        max(prise.prise_value) as priseMaxValue,\
+                        min(prise.prise_origin_value) as priseOriginMinValue,\
+                        max(prise.prise_origin_value) as priseOriginMaxValue\
+                   from\
+                        mu_spu as spu,\
+                        (\
+                           select \
+                              mu_prise . *\
+                           from\
+                              mu_prise, mu_spu\
+                           where\
+                           mu_spu.product_id = mu_prise.product_id\
+                           order by mu_prise.prise_valid_time desc limit 1\
+                        ) as prise,\
+                        mu_spu_category as category\
+                    where\
+                        spu.product_id = prise.product_id \
+                        and spu.product_category_id = category.category_id\
+                        group by spu.product_id",                        
     queryKeeps: "select sku.keep_id as keepId, \
                         sku.product_id as productId, \
                         sku.keep_creator_id as creatorId, \
@@ -168,9 +181,14 @@ function insertDetail(req)
 
 function insertProduct(detailId, req)
 {
-    var product = 
+    var productId = req.sanitize('pid').escape()    
+    if (productId == undefined || productId == "") 
     {
-        productId  :  uuidv1(),
+        productId = uuidv1()
+    }
+    var product = 
+    {        
+        productId  :  productId,
         name       :  req.sanitize('name').escape(),
         desc       :  req.sanitize('description').escape(),
         detailId   :  detailId,
@@ -207,10 +225,15 @@ function insertKeeps (productId, req)
     var keeps = req.body.keepItems
     for(index in keeps)
     {
-        var item = keeps[index]
+        var item   = keeps[index]            
+        var keepId = sanitizer.escape(item.keepId)
+        if (keepId == undefined || keepId == "") 
+        {
+            keepId = uuidv1()
+        }
         var keep = 
         {
-            keepId     : uuidv1(),
+            keepId     : keepId,
             productId  : productId,
             creatorId  : req.session.loginId,
             createTime : moment().format("YYYY-MM-DD HH:mm:ss"),

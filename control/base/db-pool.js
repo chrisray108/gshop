@@ -30,7 +30,11 @@ const querySync = function(conn,sql,options)
 {
     return new Promise(function (resolve, reject) {        
         conn.query(sql, options, function(err,results,fields){
-             if (err) reject(err)
+             if (err) 
+             {
+               console.log("sql : "+ sql)
+               reject(err)
+             }
              else resolve()             
         });
     });
@@ -64,7 +68,7 @@ var transaction = function(sqls,callback)
               });
            })
            .catch(function(err) {
-              conn.rollback(function() {
+              conn.rollback(function() {                
                 console.log("error1! rollback: "+ err)
                 callback(err);
               });             

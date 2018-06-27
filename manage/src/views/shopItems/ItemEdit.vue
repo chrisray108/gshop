@@ -193,12 +193,13 @@
             let that = this;
             return {
                 product:{
+                     pid: "",                  
                      mainPic:"",
                      name:"",
                      description:"",
                      detailContent:"",
                      status:"",
-                     sellCount:'',
+                     sellCount:"",
                      keepItems:[new KeepItem()],
                      keepOption:[],
                      categoryId:"",
@@ -219,7 +220,6 @@
         beforeCreate:function(){
            let that = this;
            this.$Spin.show();
-           //alert(this.$route.query.pid)
            let product = this.$route.query.product
            var promises = []
            var fetchCategories = this.$store.dispatch('FetchCategories');        
