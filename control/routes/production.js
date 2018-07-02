@@ -11,14 +11,14 @@ var productionSqlMap = {
     add:"insert into MU_SPU_CATEGORY (category_id, category_name, category_create_time, category_order) values (?,?,?,(select case when max(category_order) is null then 1 else max(category_order)+1 end from (select category_order from MU_SPU_CATEGORY)  as total))",
     remove:"update MU_SPU_CATEGORY set category_valid = 0 where category_id = ?",
     addDetail :"insert into MU_SPU_DETAIL (detail_id, detail_content, detail_create_time) values (?,?,?)",
-    addProduct:"insert or replace into MU_SPU (product_id, product_name, product_desc, \
+    addProduct:"replace into MU_SPU (product_id, product_name, product_desc, \
                 product_detail_id, product_category_id, product_status, product_sale_type,\
                 product_creator_id, product_create_time, product_sell_count, product_main_pic) values (?,?,?,?,?,?,?,?,?,?,?)",
-    addKeep:"insert or replace into MU_SKU(keep_id, product_id, keep_creator_id, keep_create_time, \
+    addKeep:"replace into MU_SKU(keep_id, product_id, keep_creator_id, keep_create_time, \
              keep_count, keep_unlimited_count, keep_spec_desc) values (?,?,?,?,?,?,?)",
-    addPrise:"insert into MU_PRISE (prise_id, product_id,keep_id, \
+    addPrise:"insert into MU_PRISE (product_id,keep_id, \
               prise_value, prise_origin_value, prise_valid_time) \
-              values (?,?,?,?,?,?)",
+              values (?,?,?,?,?)",
     queryProduct: "select \
                         spu.product_id as pid,\
                         spu.product_name as name,\
@@ -42,7 +42,8 @@ var productionSqlMap = {
                               mu_prise, mu_spu\
                            where\
                            mu_spu.product_id = mu_prise.product_id\
-                           order by mu_prise.prise_valid_time desc limit 1\
+                           and mu_prise.prise_valid_time < now()\
+                           order by mu_prise.prise_valid_time desc\
                         ) as prise,\
                         mu_spu_category as category\
                     where\
@@ -58,10 +59,21 @@ var productionSqlMap = {
                         sku.keep_spec_desc as specDesc, \
                         prise.prise_value as prise,\
                         prise.prise_origin_value as originPrise \
-                        from mu_sku sku, mu_prise prise \
-                 where sku.product_id = ? \
-                 and sku.keep_status != '0' \
-                 and prise.keep_id = sku.keep_id ",
+                        from \
+                        mu_sku sku, \
+                        (\
+                            select datatable.* from \
+                               (\
+                                  select max(prise_id) prise_id, \
+                                  keep_id from MU_PRISE where prise_valid_time < now() group by keep_id\
+                               ) prisetable\
+                            inner join MU_PRISE datatable \
+                            on datatable.prise_id = prisetable.prise_id\
+                            and datatable.keep_id = prisetable.keep_id\
+                        ) as prise\
+                  where sku.product_id = ? \
+                  and sku.keep_id = prise.keep_id\
+                  and sku.keep_status != '0' ",
     queryProductDetail:"select detail_content as content \
                         from  MU_SPU_DETAIL where detail_id = ? \
                         and detail_valid = 1 \
@@ -264,7 +276,6 @@ function insertPrise(productId, keepId, item)
 {
     var prise = 
         {
-            priseId   : uuidv1(),
             productId : productId,
             keepId    : keepId,
             prise     : sanitizer.escape(item.prise),
@@ -273,14 +284,14 @@ function insertPrise(productId, keepId, item)
         }     
     let sql = 
     {
-        priseId : prise.priseId,
         exec    : productionSqlMap.addPrise,
-        options : [prise.priseId, 
-                   prise.productId,
-                   prise.keepId, 
-                   prise.prise, 
-                   prise.originPrise, 
-                   prise.validTime],
+        options : [                    
+                       prise.productId,
+                       prise.keepId, 
+                       prise.prise, 
+                       prise.originPrise, 
+                       prise.validTime
+                   ],
     }
     return sql
 }
