@@ -3,8 +3,9 @@
   "version": "0.0.0",
   "private": true,
   "scripts": {
-    "start": "pm2 start settings.config.js --watch",
-    "production": "pm2 start settings.config.js --env production"
+    "start" : "pm2 start settings.config.js --watch",
+    "production": "pm2 start settings.config.js --env production",
+    "deploy" : "pm2 deploy settings.config.js production"
   },
   "dependencies": {
     "config-lite": "^2.1.0",
