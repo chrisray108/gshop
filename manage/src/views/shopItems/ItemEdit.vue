@@ -200,7 +200,7 @@
                      detailContent:"",
                      status:"",
                      sellCount:"",
-                     keepItems:[new KeepItem()],
+                     keepItems:[],
                      keepOption:[],
                      categoryId:"",
                 },
@@ -237,14 +237,19 @@
                 that.$data.categories = results[0]
                 if (isEdit) 
                 {
-                  that.$data.product = product
+                  Object.assign(that.$data.product, product);
                   that.$data.product.keepItems = results[1]
                   that.$data.product.detailContent = results[2].content
                 }                
                 that.$Spin.hide();
            }).catch(error => {
                  that.$Spin.hide();
-                 that.$Message.error("数据请求失败: " + error.response.status);
+                 var statusCode = -1
+                 if (error.response != undefined) 
+                 {
+                    statusCode = error.response.status
+                 }
+                 that.$Message.error("数据请求失败: " + statusCode);
                  that.$router.back();
             });
         },
