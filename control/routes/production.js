@@ -13,7 +13,7 @@ var productionSqlMap = {
     addDetail :"insert into MU_SPU_DETAIL (detail_id, detail_content, detail_create_time) values (?,?,?)",
     addProduct:"replace into MU_SPU (product_id, product_name, product_desc, \
                 product_detail_id, product_category_id, product_status, product_sale_type,\
-                product_creator_id, product_create_time, product_sell_count, product_main_pic) values (?,?,?,?,?,?,?,?,?,?,?)",
+                product_creator_id, product_create_time, product_sell_count, product_main_pic) values (?,?,?,?,?,?,?,?,?,?,?)",                   
     addKeep:"replace into MU_SKU(keep_id, product_id, keep_creator_id, keep_create_time, \
              keep_count, keep_unlimited_count, keep_spec_desc) values (?,?,?,?,?,?,?)",
     addPrise:"insert into MU_PRISE (product_id,keep_id, \
@@ -74,10 +74,13 @@ var productionSqlMap = {
                   where sku.product_id = ? \
                   and sku.keep_id = prise.keep_id\
                   and sku.keep_status != '0' ",
-    queryProductDetail:"select detail_content as content \
+
+    queryProductDetail: "select detail_content as content \
                         from  MU_SPU_DETAIL where detail_id = ? \
                         and detail_valid = 1 \
                         order by detail_create_time desc limit 1",  
+
+    changeProductStatus: "update mu_spu set product_status = ? where product_id = ?",
 };
 
 router.post('/productList', function(req, res, next) {
@@ -172,6 +175,40 @@ router.post('/addProduct', function(req, res, next) {
             res.status(200).send();
         }
     });
+});
+
+
+router.post('/changeProductStatus', function(req, res, next) {
+    req.assert('pid', 'pid is required').notEmpty()
+    req.assert('status', 'status is required').notEmpty()
+    req.assert('status', 'status value error').matches('^(0|1|2|3)$')
+    var errors = req.validationErrors()    
+    if( !errors ) 
+    {
+        let pid     =  req.sanitize('pid').escape();
+        let status  =  req.sanitize('status').escape();
+        console.log(status)
+        database.query(productionSqlMap.changeProductStatus, [status, pid], function(err, results) 
+        {
+            if (err) 
+            { 
+                console.log(err)
+                res.status(400).send('Sorry, The operation couldn’t be completed:' + err);                           
+            }
+            else 
+            {
+                res.status(200).send();
+            }
+        })
+    }
+    else
+    {
+        var error_msg = '';
+        errors.forEach(function(error) {
+            error_msg += error.msg + '<br>'
+        });
+        res.status(414).send('Sorry, The param is not passed: ' + error_msg);            
+    }
 });
 
 function insertDetail(req)

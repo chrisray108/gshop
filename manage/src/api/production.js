@@ -38,3 +38,16 @@ export function fetchProductDetail(detailId) {
     data
   });
 }
+
+
+export function changeProductStatus(pid, status) {
+  const data = {
+     pid : pid,
+     status : status
+  }
+  return fetch({
+    url: '/production/changeProductStatus',
+    method: 'post',
+    data
+  });
+}

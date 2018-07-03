@@ -1,5 +1,5 @@
 import { getCategories, addCategory, removeCategory } from 'api/category';
-import { addProduct, fetchProducts, fetchKeeps, fetchProductDetail } from 'api/production';
+import { addProduct, fetchProducts, fetchKeeps, fetchProductDetail, changeProductStatus } from 'api/production';
 
 const production = {
 	state:{},
@@ -31,6 +31,17 @@ const production = {
 		{
 	        return new Promise((resolve, reject) => {
 	          fetchProductDetail(detailId).then(response => {
+	            resolve(response.data);
+	          }).catch(error => {
+	            reject(error);
+	          });
+	        });
+		},
+
+		ChangeProductStatus({ commit }, data)
+		{
+			return new Promise((resolve, reject) => {
+	          changeProductStatus(data.pid, data.status).then(response => {
 	            resolve(response.data);
 	          }).catch(error => {
 	            reject(error);

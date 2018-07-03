@@ -24,6 +24,13 @@
 
 
 <script>
+    // '产品状态：不可用(0)->上架(1)->下架(2)->定时上架(3)',
+    var productStatusMap = {
+      invalid  : '0',
+      onSale   : '1',
+      nonSale  : '2',
+      onSchedule : '3'
+    };
     export default {
         data () {
             let that = this;
@@ -32,15 +39,42 @@
                     {
                         title: '商品',
                         key: 'name',                        
-                        render: (h, params) => {                             
-                          return h('div', [
-                            h('strong', {
+                        render: (h, params) => {      
+                          let product = params.row
+                          if (product.status == productStatusMap.nonSale) 
+                          {
+                            return h('div', [
+                               h('strong', {
+                                  style: {
+                                      fontSize : '15px',
+                                  }
+                                }, 
+                               params.row.name),
+                               h('Button', {
+                                  style: {
+                                      marginTop  : '-3px',
+                                      marginLeft : '10px',
+                                  },
+                                  props: {
+                                      type: 'error',
+                                      size: 'small',                                        
+                                  },
+                               },'商品下架'),
+                            ])
+                          }                       
+                          else
+                          {
+                            return h('div', [
+                            h('div', {
                                 style: {
-                                    fontSize : '15px',
+                                    fontWeight : 'bold',
+                                    fontSize   : '15px',
                                 }
                               }, 
-                              params.row.name),
-                           ]);                            
+                              params.row.name)                          
+                            ]); 
+                          }
+                          
                         }
                     },
                     {
@@ -105,6 +139,7 @@
                         width: 130,
                         align: 'center',
                         render: (h, params) => {
+                            this.rendingProduct = params.row
                             return h('div', [                               
                                  h('Button', {
                                     props: {
@@ -112,14 +147,25 @@
                                         size: 'small',                                        
                                     },
                                     on: {
-                                        click: () => {
-                                            this.onConfig(params.row.pid)
+                                        click: (event) => { 
+                                            let product = params.row
+                                            var status = product.status
+                                            if (status == productStatusMap.onSale || status == productStatusMap.onSchedule)
+                                            {
+                                                status = productStatusMap.nonSale
+                                            }
+                                            else
+                                            {
+                                                status = productStatusMap.onSale
+                                            }
+                                            this.changeItemStatus(params.row, status)
                                         }
                                     }
                                   },[
                                      h('Icon',{
-                                        props: {
-                                          type: 'ios-gear-outline',
+                                        props: 
+                                        {
+                                          type: this.itemStatusOperateIcon,
                                           size: '20',
                                         },
                                      }),
@@ -149,14 +195,32 @@
                 ],
                 data1: [
                     
-                ]
+                ],
+                rendingProduct:{status:'invalid'},
             }
         },
         beforeCreate:function(){
            let that = this;
            this.$store.dispatch('FetchProducts').then((datas) => { 
-                 that.$data.data1 = datas;
+              that.$data.data1 = datas;
+           }).catch(error => {
+              that.$Message.error("数据请求失败: " + error.response.status);
            });
+        },
+
+        computed: {
+          itemStatusOperateIcon: function () {
+            switch(this.rendingProduct.status) 
+            {
+              case productStatusMap.onSale:
+              case productStatusMap.onSchedule:
+                 return 'ios-cloud-download-outline'
+              case productStatusMap.nonSale:
+                 return 'ios-cloud-upload-outline'
+              default:
+                 return ''
+            }            
+          }
         },
 
         methods:{   
@@ -168,10 +232,20 @@
            {
               this.$router.push({path: '/shopitemedit', query: { product: product} });
            },      
-           onConfig(pid)
-           {
-
-           },   
+           changeItemStatus(product, status)
+           { 
+             let data = {
+                pid    : product.pid,
+                status : status
+             } 
+             let that = this;            
+             this.$store.dispatch('ChangeProductStatus',data).then(() => { 
+                product.status = status                  
+             }).catch(error => {
+                that.$Message.error("数据操作失败: " + error.response.status);
+             });
+              
+           }   
         }
       }
 

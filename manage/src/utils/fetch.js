@@ -28,6 +28,10 @@ service.interceptors.response.use(
   },
   error => 
   {
+    if (error.response.status == 417) 
+    {
+       store.commit('SET_TOKEN', '');
+    }    
     return Promise.reject(error);
   }
 )
