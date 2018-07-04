@@ -33,7 +33,7 @@ app.use(expressValidator());
 app.use(session(config.session));
 
 app.all('*', function(req, res, next) {
-    res.header("Access-Control-Allow-Origin", "http://localhost:9002");
+    res.header("Access-Control-Allow-Origin", "http://ccshop.oss-cn-hangzhou.aliyuncs.com");
     res.header("Access-Control-Allow-Headers", "X-Requested-With, Content-Type");
     res.header("Access-Control-Allow-Methods","PUT,POST,GET,DELETE,OPTIONS");
     res.header("Access-Control-Allow-Credentials","true");
