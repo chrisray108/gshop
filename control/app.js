@@ -47,14 +47,14 @@ app.all('*', function(req, res, next) {
 app.use('/login', loginRouter); 
 
 
-app.use('/', function(req, res, next){
-    var sess = req.session;
-    var loginUser = sess.loginId;
-    var isLogined = !!loginUser;
-    if(isLogined) next();
-    else
-    res.status(417).send();
-});
+// app.use('/', function(req, res, next){
+//     var sess = req.session;
+//     var loginUser = sess.loginId;
+//     var isLogined = !!loginUser;
+//     if(isLogined) next();
+//     else
+//     res.status(417).send();
+// });
 
 
 app.use('/', indexRouter);
