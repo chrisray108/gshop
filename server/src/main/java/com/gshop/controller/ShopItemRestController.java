@@ -28,7 +28,7 @@ public class ShopItemRestController {
     @RequestMapping(value = "/test",method = RequestMethod.GET)
     String test()
     {
-        return "it is my test  aaaaaaadssdsdssssssssssss";
+        return "it is my test  dd";
     }
 
 

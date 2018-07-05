@@ -39,8 +39,8 @@ var productionSqlMap = {
                                 and mu_prise.prise_valid_time < now()\
                                 order by mu_prise.prise_valid_time desc\
                               ) prise\
-                            where spu.product_id = prise.product_id\
-                                GROUP BY spu.product_id\
+                              where spu.product_id = prise.product_id\
+                              group by spu.product_id\
                             )\
                             as spu\
                     left join mu_spu_category category on category.category_id = spu.categoryId",                        
