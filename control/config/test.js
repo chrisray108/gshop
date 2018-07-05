@@ -19,5 +19,6 @@ module.exports = {
     cookie: {
         maxAge: 60 * 60 * 1000  // 有效期，单位是毫秒
     }
-  }
+  },
+  originServer:"http://ccshop.oss-cn-hangzhou.aliyuncs.com",
 };

@@ -24,6 +24,7 @@ router.post('/loginByEmail', function(req, res, next) {
         database.query(sqlMap.loginByEmail, [user.email, user.token], function(err, result) {
             if (err)
             {
+                console.log(err)
                 res.status(errorCode.queryFailed).send('Sorry, The operation couldn’t be completed:' + err);                           
             }
             else

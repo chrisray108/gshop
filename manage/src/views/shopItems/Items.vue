@@ -139,7 +139,6 @@
                         width: 130,
                         align: 'center',
                         render: (h, params) => {
-                            this.rendingProduct = params.row
                             return h('div', [                               
                                  h('Button', {
                                     props: {
@@ -165,7 +164,7 @@
                                      h('Icon',{
                                         props: 
                                         {
-                                          type: this.itemStatusOperateIcon,
+                                          type: this.itemStatusOperateIcon(params.row),
                                           size: '20',
                                         },
                                      }),
@@ -207,31 +206,17 @@
               that.$Message.error("数据请求失败: " + error.response.status);
            });
         },
-
-        computed: {
-          itemStatusOperateIcon: function () {
-            switch(this.rendingProduct.status) 
-            {
-              case productStatusMap.onSale:
-              case productStatusMap.onSchedule:
-                 return 'ios-cloud-download-outline'
-              case productStatusMap.nonSale:
-                 return 'ios-cloud-upload-outline'
-              default:
-                 return ''
-            }            
-          }
-        },
-
         methods:{   
            addSPU()
            {
               this.$router.push({path: '/shopitemedit'});
            },
+
            editProduct(product)
            {
               this.$router.push({path: '/shopitemedit', query: { product: product} });
            },      
+           
            changeItemStatus(product, status)
            { 
              let data = {
@@ -245,7 +230,21 @@
                 that.$Message.error("数据操作失败: " + error.response.status);
              });
               
-           }   
+           },
+
+           itemStatusOperateIcon(product)
+           {
+             switch(product.status) 
+             {
+               case productStatusMap.onSale:
+               case productStatusMap.onSchedule:
+                 return 'ios-cloud-download-outline'
+               case productStatusMap.nonSale:
+                 return 'ios-cloud-upload-outline'
+               default:
+                 return ''
+             } 
+           }
         }
       }
 

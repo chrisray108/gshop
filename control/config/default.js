@@ -19,5 +19,6 @@ module.exports = {
     cookie: {
         maxAge: 30 * 60 * 1000  // 有效期，单位是毫秒
     }
-  }
+  },
+  originServer:"http://localhost:9002",
 };
