@@ -9,47 +9,41 @@ var sanitizer = require('sanitizer');
 var productionSqlMap = {
     query:"select category_id as cid, category_name as name from MU_SPU_CATEGORY where category_valid=1 order by category_order",
     add:"insert into MU_SPU_CATEGORY (category_id, category_name, category_create_time, category_order) values (?,?,?,(select case when max(category_order) is null then 1 else max(category_order)+1 end from (select category_order from MU_SPU_CATEGORY)  as total))",
-    remove:"update MU_SPU_CATEGORY set category_valid = 0 where category_id = ?",
+    removeCategory:"update MU_SPU_CATEGORY set category_valid = 0 where category_id = ?",
     addDetail :"insert into MU_SPU_DETAIL (detail_id, detail_content, detail_create_time) values (?,?,?)",
     addProduct:"replace into MU_SPU (product_id, product_name, product_desc, \
                 product_detail_id, product_category_id, product_status, product_sale_type,\
                 product_creator_id, product_create_time, product_sell_count, product_main_pic) values (?,?,?,?,?,?,?,?,?,?,?)",                   
-    addKeep:"replace into MU_SKU(keep_id, product_id, keep_creator_id, keep_create_time, \
+    addKeep: "replace into MU_SKU(keep_id, product_id, keep_creator_id, keep_create_time, \
              keep_count, keep_unlimited_count, keep_spec_desc) values (?,?,?,?,?,?,?)",
-    addPrise:"insert into MU_PRISE (product_id,keep_id, \
+    addPrise: "insert into MU_PRISE (product_id,keep_id, \
               prise_value, prise_origin_value, prise_valid_time) \
               values (?,?,?,?,?)",
-    queryProduct: "select \
-                        spu.product_id as pid,\
-                        spu.product_name as name,\
-                        spu.product_main_pic as mainPic,\
-                        spu.product_desc as description,\
-                        spu.product_sell_count as sellCount,\
-                        spu.product_category_id as categoryId,\
-                        spu.product_status as status,\
-                        spu.product_detail_id as detaidId,\
-                        category.category_name as categoryName,\
-                        min(prise.prise_value) as priseMinValue,\
-                        max(prise.prise_value) as priseMaxValue,\
-                        min(prise.prise_origin_value) as priseOriginMinValue,\
-                        max(prise.prise_origin_value) as priseOriginMaxValue\
-                   from\
-                        mu_spu as spu,\
-                        (\
-                           select \
-                              mu_prise . *\
-                           from\
-                              mu_prise, mu_spu\
-                           where\
-                           mu_spu.product_id = mu_prise.product_id\
-                           and mu_prise.prise_valid_time < now()\
-                           order by mu_prise.prise_valid_time desc\
-                        ) as prise,\
-                        mu_spu_category as category\
-                    where\
-                        spu.product_id = prise.product_id \
-                        and spu.product_category_id = category.category_id\
-                        group by spu.product_id",                        
+    queryProduct: "select spu.*, category.category_name as categoryName \
+                   from (\
+                          select spu.product_id as pid, \
+                            spu.product_name as name, \
+                            spu.product_main_pic as mainPic,\
+                            spu.product_desc as description,\
+                            spu.product_sell_count as sellCount,\
+                            spu.product_category_id as categoryId,\
+                            spu.product_status as status,\
+                            spu.product_detail_id as detaidId, \
+                            MIN(prise.prise_value) as priseMinValue,\
+                            MAX(prise.prise_value) as priseMaxValue,\
+                            MIN(prise.prise_origin_value) as priseOriginMinValue,\
+                            MAX(prise.prise_origin_value) as priseOriginMaxValue\
+                            from mu_spu spu, \
+                              (\
+                                select mu_prise.* from mu_prise, mu_spu where mu_spu.product_id = mu_prise.product_id\
+                                and mu_prise.prise_valid_time < now()\
+                                order by mu_prise.prise_valid_time desc\
+                              ) prise\
+                            where spu.product_id = prise.product_id\
+                                GROUP BY spu.product_id\
+                            )\
+                            as spu\
+                    left join mu_spu_category category on category.category_id = spu.categoryId",                        
     queryKeeps: "select sku.keep_id as keepId, \
                         sku.product_id as productId, \
                         sku.keep_creator_id as creatorId, \
@@ -79,14 +73,14 @@ var productionSqlMap = {
                         from  MU_SPU_DETAIL where detail_id = ? \
                         and detail_valid = 1 \
                         order by detail_create_time desc limit 1",  
-
+    queryCategoryInUse: "select count(*) from mu_spu where product_category_id = ?",
     changeProductStatus: "update mu_spu set product_status = ? where product_id = ?",
 };
+
 
 router.post('/productList', function(req, res, next) {
     database.query(productionSqlMap.queryProduct, null, function(err,results,fields) {
         if (err) {
-            console.log(err)
             res.status(400).send('Sorry, The operation couldn’t be completed:' + err);                           
         } else {                                      
             let products = results
@@ -133,7 +127,6 @@ router.post('/fetchDetail', function(req, res, next) {
         {
             if (err) 
             { 
-                console.log(err)
                 res.status(400).send('Sorry, The operation couldn’t be completed:' + err);                           
             }
             else 
@@ -169,7 +162,6 @@ router.post('/addProduct', function(req, res, next) {
     }
     database.transaction(sqls,function(err){
         if (err) { 
-            console.log("add product error: " + err)
             res.status(400).send('Sorry, The operation couldn’t be completed:' + err);                           
         } else {                                
             res.status(200).send();
@@ -187,12 +179,10 @@ router.post('/changeProductStatus', function(req, res, next) {
     {
         let pid     =  req.sanitize('pid').escape();
         let status  =  req.sanitize('status').escape();
-        console.log(status)
         database.query(productionSqlMap.changeProductStatus, [status, pid], function(err, results) 
         {
             if (err) 
             { 
-                console.log(err)
                 res.status(400).send('Sorry, The operation couldn’t be completed:' + err);                           
             }
             else 
@@ -338,8 +328,7 @@ router.get('/categoryList', function(req, res, next) {
     database.query(productionSqlMap.query, null, function(err,results,fields) {
             if (err) {
                 res.status(400).send('Sorry, The operation couldn’t be completed:' + err);                           
-            } else {     
-                console.log(JSON.stringify(results))                       	
+            } else {                        	
                 res.status(200).send(results);
             }
         })
@@ -384,14 +373,28 @@ router.post('/removeCategory', function(req, res, next) {
     if( !errors ) 
     {
         let categoryId  =  req.sanitize('cid').escape();
-        database.query(productionSqlMap.remove, categoryId, function(err,result) 
-        {
-            if (err) { 
-                res.status(400).send('Sorry, The operation couldn’t be completed:' + err);                           
-            } else {                                
-                res.status(200).send();
-            }
-        })
+        database.query(productionSqlMap.queryCategoryInUse, categoryId, function(err, results){
+           if (!err) 
+           {
+                if (results.length) 
+                {
+                    res.status(411).send('category is in use');                           
+                    return;
+                }
+                database.query(productionSqlMap.removeCategory, categoryId, function(err,result) 
+                {
+                    if (err) { 
+                        res.status(400).send('Sorry, The operation couldn’t be completed:' + err);                           
+                    } else {                                
+                        res.status(200).send();
+                    }
+                })
+           }
+           else
+           {
+               res.status(400).send('Sorry, The operation couldn’t be completed:' + err);                           
+           } 
+        });        
     }
     else
     {

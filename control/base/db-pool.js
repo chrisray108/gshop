@@ -10,6 +10,10 @@ var query = function(sql,options,callback)
     {  
         if(err)
         {  
+            if (err) 
+            {
+               console.log(err)
+            }
             callback(err,null,null);  
         }
         else
@@ -17,6 +21,7 @@ var query = function(sql,options,callback)
             conn.query(sql,options,function(err,results,fields){  
                 if (err) 
                 {
+                   console.log(err)
                    console.log(sql,options)
                 }                
                 conn.release();  
@@ -32,7 +37,8 @@ const querySync = function(conn,sql,options)
         conn.query(sql, options, function(err,results,fields){
              if (err) 
              {
-               console.log("sql : "+ sql)
+               console.log(err)
+               console.log(sql,options)
                reject(err)
              }
              else resolve()             
