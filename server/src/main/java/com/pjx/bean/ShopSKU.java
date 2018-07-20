@@ -1,4 +1,4 @@
-package com.gshop.bean;
+package com.pjx.bean;
 
 import java.io.Serializable;
 

@@ -1,5 +1,5 @@
-package com.gshop.service;
-import com.gshop.bean.ShopSPU;
+package com.pjx.service;
+import com.pjx.bean.ShopSPU;
 import java.util.List;
 
 

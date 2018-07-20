@@ -1,8 +1,8 @@
-package com.gshop.controller;
+package com.pjx.controller;
 
-import com.gshop.bean.ShopSPU;
+import com.pjx.bean.ShopSPU;
 
-import com.gshop.service.ShopSKUService;
+import com.pjx.service.ShopSKUService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -28,7 +28,7 @@ public class ShopItemRestController {
     @RequestMapping(value = "/test",method = RequestMethod.GET)
     String test()
     {
-        return "it is my test  dd";
+        return "it is my test  31231";
     }
 
 

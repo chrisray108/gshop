@@ -1,4 +1,4 @@
-package com.gshop.server;
+package com.pjx.server;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;

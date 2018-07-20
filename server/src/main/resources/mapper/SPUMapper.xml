@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
-<mapper namespace="com.gshop.dao.SPUDao">
-	<resultMap id="BaseResultMap" type="com.gshop.bean.ShopSPU">
+<mapper namespace="com.pjx.dao.SPUDao">
+	<resultMap id="BaseResultMap" type="com.pjx.bean.ShopSPU">
 		<result column="pid" property="spuId" />
 		<result column="title" property="title" />
 		<result column="sub_title" property="subTitle" />
@@ -11,7 +11,7 @@
         <result column="prise"    property="prise" />
 	</resultMap>
 
-	<parameterMap id="ShopSPU" type="com.gshop.bean.ShopSPU"/>
+	<parameterMap id="ShopSPU" type="com.pjx.bean.ShopSPU"/>
 
 	<sql id="SPU_Item_List">
 		pid, title, sub_title, spu_desc, image_urls, prise, spu_type

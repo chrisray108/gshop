@@ -1,6 +1,6 @@
-package com.gshop.dao;
+package com.pjx.dao;
 
-import com.gshop.bean.ShopSPU;
+import com.pjx.bean.ShopSPU;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 

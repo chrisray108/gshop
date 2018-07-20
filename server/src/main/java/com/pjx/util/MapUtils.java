@@ -1,4 +1,4 @@
-package com.gshop.util;
+package com.pjx.util;
 
 import java.beans.BeanInfo;
 import java.beans.Introspector;

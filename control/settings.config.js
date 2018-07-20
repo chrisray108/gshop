@@ -33,7 +33,7 @@ module.exports = {
       // even before the setup process starts
       // can be multiple commands separated by the character ";"
       // or path to a script on your local machine
-      "pre-setup" : "apt-get install git",
+      "pre-setup" : "yum install git -y",
       // Commands / path to a script on the host machine
       // This will be executed on the host after cloning the repository
       // eg: placing configurations in the shared dir etc
